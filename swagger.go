@@ -2,7 +2,6 @@ package ginSwagger
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/labstack/gommon/log"
 	"github.com/swag-gonic/swag/swagger"
 	"golang.org/x/net/webdav"
 	"html/template"
@@ -19,7 +18,7 @@ func WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 		Host string
 	}
 
-	var re = regexp.MustCompile(`(.*)(/|index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
+	var re = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
 
 	return func(c *gin.Context) {
 		var matches []string
@@ -33,15 +32,11 @@ func WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 		h.Prefix = prefix
 
 		switch path {
-		case "/", "index.html":
+		case "index.html":
 			s := &pro{
 				Host: "doc.json", //TODO: provide to customs?
 			}
-
-			if err := index.Execute(c.Writer, s); err != nil {
-				log.Fatal("Execute:", err)
-				return
-			}
+			index.Execute(c.Writer, s)
 		case "doc.json":
 			c.Writer.Write([]byte(swagger.ReadDoc()))
 			return
