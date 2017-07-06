@@ -3,11 +3,11 @@ package ginSwagger
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"github.com/swag-gonic/gin-swagger/swaggerFiles"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"net/http/httptest"
 	"testing"
 
-	_ "github.com/swag-gonic/gin-swagger/example/docs"
+	_ "github.com/swaggo/gin-swagger/example/docs"
 )
 
 func TestWrapHandler(t *testing.T) {

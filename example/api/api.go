@@ -3,7 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/swag-gonic/swag/example/web"
+	"github.com/swaggo/swag/example/web"
 )
 
 //
