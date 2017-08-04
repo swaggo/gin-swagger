@@ -13,7 +13,7 @@ gin middleware to automatically generate RESTful API documentation with Swagger 
 1. Add comments to your API source code, [See Declarative Comments Format](https://github.com/swaggo/swag#declarative-comments-format).
 2. Download [Swag](https://github.com/swaggo/swag) for Go by using:
 ```sh
-$ go get -u github.com/swaggo/swag
+$ go get github.com/swaggo/swag/cmd/swag
 ```
 
 3. Run the [Swag](https://github.com/swaggo/swag) in your Go project root folder which contains `main.go` file, [Swag](https://github.com/swaggo/swag) will parse comments and generate required files(`docs` folder and `docs/doc.go`).
@@ -57,7 +57,8 @@ import (
 // @BasePath /v2
 func main() {
 	r := gin.New()
-
+    
+    // use ginSwagger middleware to 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.Run()

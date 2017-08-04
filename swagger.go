@@ -9,7 +9,7 @@ import (
 	"github.com/swaggo/swag"
 )
 
-// WrapHandler wraps `http.Handler` into `echo.HandlerFunc`.
+// WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 	//create a template with name
 	t := template.New("swagger_index.html")
