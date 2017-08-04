@@ -1,11 +1,12 @@
 package ginSwagger
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/swaggo/swag"
 	"golang.org/x/net/webdav"
 	"html/template"
 	"regexp"
+
+	"github.com/gin-gonic/gin"
+	"github.com/swaggo/swag"
 )
 
 // WrapHandler wraps `http.Handler` into `echo.HandlerFunc`.

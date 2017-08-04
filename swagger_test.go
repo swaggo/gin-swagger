@@ -1,11 +1,12 @@
 package ginSwagger
 
 import (
+	"net/http/httptest"
+	"testing"
+
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	"net/http/httptest"
-	"testing"
 
 	_ "github.com/swaggo/gin-swagger/example/docs"
 )
