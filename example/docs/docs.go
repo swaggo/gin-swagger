@@ -5,7 +5,7 @@
 package docs
 
 import (
-	"github.com/swaggo/swag/swagger"
+	"github.com/swaggo/swag"
 )
 
 var doc = `{
@@ -157,5 +157,5 @@ func (s *s) ReadDoc() string {
 	return doc
 }
 func init() {
-	swagger.Register(swagger.Name, &s{})
+	swag.Register(swag.Name, &s{})
 }

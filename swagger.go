@@ -2,7 +2,7 @@ package ginSwagger
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/swag/swagger"
+	"github.com/swaggo/swag"
 	"golang.org/x/net/webdav"
 	"html/template"
 	"regexp"
@@ -38,7 +38,7 @@ func WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 			}
 			index.Execute(c.Writer, s)
 		case "doc.json":
-			doc, _ := swagger.ReadDoc()
+			doc, _ := swag.ReadDoc()
 			c.Writer.Write([]byte(doc))
 			return
 		default:
