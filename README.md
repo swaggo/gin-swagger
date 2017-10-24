@@ -65,4 +65,4 @@ func main() {
 }
 ```
 
-5. Run it, and broswer to http://localhost:8080/swagger, you can see Swagger 2.0 Api documents.
+5. Run it, and browser to http://localhost:8080/swagger/index.html, you can see Swagger 2.0 Api documents.
