@@ -37,7 +37,7 @@ func init() {
 		log.Fatal(CTX.Err())
 	}
 
-	var err error
+	//var err error
 
 	Handler = &webdav.Handler{
 		FileSystem: FS,
