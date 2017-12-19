@@ -20,7 +20,12 @@ $ go get github.com/swaggo/swag/cmd/swag
 ```sh
 $ swag init
 ```
-4.Import following in your code:
+4.Download [gin-swagger](https://github.com/swaggo/gin-swagger) by using:
+```sh
+$ go get -u github.com/swaggo/gin-swagger
+$ go get -u github.com/swaggo/gin-swagger/swaggerFiles
+```
+And import following in your code:
 
 ```go
 import "github.com/swaggo/gin-swagger" // gin-swagger middleware
