@@ -5,6 +5,7 @@ gin middleware to automatically generate RESTful API documentation with Swagger 
 [![Travis branch](https://img.shields.io/travis/swaggo/gin-swagger/master.svg)](https://travis-ci.org/swaggo/gin-swagger)
 [![Codecov branch](https://img.shields.io/codecov/c/github/swaggo/gin-swagger/master.svg)](https://codecov.io/gh/swaggo/gin-swagger)
 [![Go Report Card](https://goreportcard.com/badge/github.com/swaggo/gin-swagger)](https://goreportcard.com/report/github.com/swaggo/gin-swagger)
+[![GoDoc](https://godoc.org/github.com/swaggo/gin-swagger?status.svg)](https://godoc.org/github.com/swaggo/gin-swagger)
 
 
 ## Usage
