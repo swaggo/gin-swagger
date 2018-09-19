@@ -14,7 +14,7 @@ gin middleware to automatically generate RESTful API documentation with Swagger 
 1. Add comments to your API source code, [See Declarative Comments Format](https://swaggo.github.io/swaggo.io/declarative_comments_format/).
 2. Download [Swag](https://github.com/swaggo/swag) for Go by using:
 ```sh
-$ go get github.com/swaggo/swag/cmd/swag
+$ go get -u github.com/swaggo/swag/cmd/swag
 ```
 
 3. Run the [Swag](https://github.com/swaggo/swag) in your Go project root folder which contains `main.go` file, [Swag](https://github.com/swaggo/swag) will parse comments and generate required files(`docs` folder and `docs/doc.go`).
