@@ -41,7 +41,10 @@ func WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 			}
 			index.Execute(c.Writer, s)
 		case "doc.json":
-			doc, _ := swag.ReadDoc()
+			doc, err := swag.ReadDoc()
+			if err != nil {
+				panic(err)
+			}
 			c.Writer.Write([]byte(doc))
 			return
 		default:
