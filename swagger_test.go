@@ -16,7 +16,7 @@ func TestWrapHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 
-	router.GET("/*any", WrapHandler(swaggerFiles.Handler))
+	router.GET("/*any", WrapHandler(&Config{}, swaggerFiles.Handler))
 
 	w1 := performRequest("GET", "/index.html", router)
 	assert.Equal(t, 200, w1.Code)
