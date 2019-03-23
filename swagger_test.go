@@ -16,7 +16,7 @@ func TestWrapHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 
-	router.GET("/*any", WrapHandler(&Config{}, swaggerFiles.Handler))
+	router.GET("/*any", WrapHandler(swaggerFiles.Handler))
 
 	w1 := performRequest("GET", "/index.html", router)
 	assert.Equal(t, 200, w1.Code)
@@ -37,7 +37,7 @@ func TestDisablingWrapHandler(t *testing.T) {
 	router := gin.New()
 	disablingKey := "SWAGGER_DISABLE"
 
-	router.GET("/simple/*any", DisablingWrapHandler(&Config{}, swaggerFiles.Handler, disablingKey))
+	router.GET("/simple/*any", DisablingWrapHandler(swaggerFiles.Handler, disablingKey))
 
 	w1 := performRequest("GET", "/simple/index.html", router)
 	assert.Equal(t, 200, w1.Code)
@@ -53,7 +53,7 @@ func TestDisablingWrapHandler(t *testing.T) {
 
 	os.Setenv(disablingKey, "true")
 
-	router.GET("/disabling/*any", DisablingWrapHandler(&Config{}, swaggerFiles.Handler, disablingKey))
+	router.GET("/disabling/*any", DisablingWrapHandler(swaggerFiles.Handler, disablingKey))
 
 	w11 := performRequest("GET", "/disabling/index.html", router)
 	assert.Equal(t, 404, w11.Code)
