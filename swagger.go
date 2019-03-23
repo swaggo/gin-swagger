@@ -70,7 +70,22 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 
 // DisablingWrapHandler turn handler off
 // if specified environment variable passed
-func DisablingWrapHandler(config *Config, h *webdav.Handler, envName string) gin.HandlerFunc {
+func DisablingWrapHandler(h *webdav.Handler, envName string) gin.HandlerFunc {
+	eFlag := os.Getenv(envName)
+	if eFlag != "" {
+		return func(c *gin.Context) {
+			// Simulate behavior when route unspecified and
+			// return 404 HTTP code
+			c.String(404, "")
+		}
+	}
+
+	return WrapHandler(h)
+}
+
+// DisablingCustomWrapHandler turn handler off
+// if specified environment variable passed
+func DisablingCustomWrapHandler(config *Config, h *webdav.Handler, envName string) gin.HandlerFunc {
 	eFlag := os.Getenv(envName)
 	if eFlag != "" {
 		return func(c *gin.Context) {
