@@ -21,17 +21,16 @@ type Config struct {
 func WrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 	//create a template with name
 	t := template.New("swagger_index.html")
-	index, err := t.Parse(swagger_index_templ)
-	if err != nil {
-		panic(err)
-	}
-	type swaggerUIBundle struct {
-		URL string
-	}
+	index, _ := t.Parse(swagger_index_templ)
 
 	var rexp = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
 
 	return func(c *gin.Context) {
+
+		type swaggerUIBundle struct {
+			URL string
+		}
+
 		var matches []string
 		if matches = rexp.FindStringSubmatch(c.Request.RequestURI); len(matches) != 3 {
 			c.Status(404)
@@ -44,11 +43,9 @@ func WrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 
 		switch path {
 		case "index.html":
-			if err := index.Execute(c.Writer, &swaggerUIBundle{
+			index.Execute(c.Writer, &swaggerUIBundle{
 				URL: config.URL,
-			}); err != nil {
-				panic(err)
-			}
+			})
 		case "doc.json":
 			doc, err := swag.ReadDoc()
 			if err != nil {
