@@ -17,8 +17,17 @@ type Config struct {
 	URL string
 }
 
+var defaultConfig = &Config{
+	URL: "http://localhost:8080/swagger/doc.json", //The url pointing to API definition
+}
+
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
-func WrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
+func WrapHandler(h *webdav.Handler) gin.HandlerFunc {
+	return CustomWrapHandler(defaultConfig, h)
+}
+
+// CustomWrapHandler wraps `http.Handler` into `gin.HandlerFunc`
+func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 	//create a template with name
 	t := template.New("swagger_index.html")
 	index, _ := t.Parse(swagger_index_templ)
@@ -71,7 +80,7 @@ func DisablingWrapHandler(config *Config, h *webdav.Handler, envName string) gin
 		}
 	}
 
-	return WrapHandler(config, h)
+	return CustomWrapHandler(config, h)
 }
 
 const swagger_index_templ = `<!-- HTML for static distribution bundle build -->
