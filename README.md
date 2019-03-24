@@ -68,7 +68,7 @@ func main() {
 		URL: "http://localhost:8080/swagger/doc.json", //The url pointing to API definition
 	}
 	// use ginSwagger middleware to 
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(config, swaggerFiles.Handler))
+	r.GET("/swagger/*any", ginSwagger.CustomWrapHandler(config, swaggerFiles.Handler))
 
 	r.Run()
 }
