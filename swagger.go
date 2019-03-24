@@ -11,21 +11,37 @@ import (
 	"github.com/swaggo/swag"
 )
 
+// Config stores ginSwagger configuration variables.
+type Config struct {
+	//The url pointing to API definition (normally swagger.json or swagger.yaml).
+	URL string
+}
+
+var defaultConfig = &Config{
+	URL: "http://localhost:8080/swagger/doc.json", //The url pointing to API definition
+}
+
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(h *webdav.Handler) gin.HandlerFunc {
+	return CustomWrapHandler(defaultConfig, h)
+}
+
+// CustomWrapHandler wraps `http.Handler` into `gin.HandlerFunc`
+func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 	//create a template with name
 	t := template.New("swagger_index.html")
 	index, _ := t.Parse(swagger_index_templ)
 
-	type pro struct {
-		Host string
-	}
-
-	var re = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
+	var rexp = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
 
 	return func(c *gin.Context) {
+
+		type swaggerUIBundle struct {
+			URL string
+		}
+
 		var matches []string
-		if matches = re.FindStringSubmatch(c.Request.RequestURI); len(matches) != 3 {
+		if matches = rexp.FindStringSubmatch(c.Request.RequestURI); len(matches) != 3 {
 			c.Status(404)
 			c.Writer.Write([]byte("404 page not found"))
 			return
@@ -36,10 +52,9 @@ func WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 
 		switch path {
 		case "index.html":
-			s := &pro{
-				Host: "doc.json", //TODO: provide to customs?
-			}
-			index.Execute(c.Writer, s)
+			index.Execute(c.Writer, &swaggerUIBundle{
+				URL: config.URL,
+			})
 		case "doc.json":
 			doc, err := swag.ReadDoc()
 			if err != nil {
@@ -49,7 +64,6 @@ func WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 			return
 		default:
 			h.ServeHTTP(c.Writer, c.Request)
-
 		}
 	}
 }
@@ -67,6 +81,21 @@ func DisablingWrapHandler(h *webdav.Handler, envName string) gin.HandlerFunc {
 	}
 
 	return WrapHandler(h)
+}
+
+// DisablingCustomWrapHandler turn handler off
+// if specified environment variable passed
+func DisablingCustomWrapHandler(config *Config, h *webdav.Handler, envName string) gin.HandlerFunc {
+	eFlag := os.Getenv(envName)
+	if eFlag != "" {
+		return func(c *gin.Context) {
+			// Simulate behavior when route unspecified and
+			// return 404 HTTP code
+			c.String(404, "")
+		}
+	}
+
+	return CustomWrapHandler(config, h)
 }
 
 const swagger_index_templ = `<!-- HTML for static distribution bundle build -->
@@ -144,7 +173,7 @@ const swagger_index_templ = `<!-- HTML for static distribution bundle build -->
 window.onload = function() {
   // Build a system
   const ui = SwaggerUIBundle({
-    url: "{{.Host}}",
+    url: "{{.URL}}",
     dom_id: '#swagger-ui',
     validatorUrl: null,
     presets: [

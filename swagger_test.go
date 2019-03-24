@@ -20,6 +20,16 @@ func TestWrapHandler(t *testing.T) {
 
 	w1 := performRequest("GET", "/index.html", router)
 	assert.Equal(t, 200, w1.Code)
+}
+
+func TestWrapCustomHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+
+	router.GET("/*any", CustomWrapHandler(&Config{}, swaggerFiles.Handler))
+
+	w1 := performRequest("GET", "/index.html", router)
+	assert.Equal(t, 200, w1.Code)
 
 	w2 := performRequest("GET", "/doc.json", router)
 	assert.Equal(t, 200, w2.Code)
@@ -66,6 +76,25 @@ func TestDisablingWrapHandler(t *testing.T) {
 
 	w44 := performRequest("GET", "/disabling/notfound", router)
 	assert.Equal(t, 404, w44.Code)
+}
+
+func TestDisablingCustomWrapHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	router := gin.New()
+	disablingKey := "SWAGGER_DISABLE2"
+
+	router.GET("/simple/*any", DisablingCustomWrapHandler(&Config{}, swaggerFiles.Handler, disablingKey))
+
+	w1 := performRequest("GET", "/simple/index.html", router)
+	assert.Equal(t, 200, w1.Code)
+
+	os.Setenv(disablingKey, "true")
+
+	router.GET("/disabling/*any", DisablingCustomWrapHandler(&Config{}, swaggerFiles.Handler, disablingKey))
+
+	w11 := performRequest("GET", "/disabling/index.html", router)
+	assert.Equal(t, 404, w11.Code)
 }
 
 func performRequest(method, target string, router *gin.Engine) *httptest.ResponseRecorder {
