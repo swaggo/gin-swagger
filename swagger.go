@@ -13,7 +13,7 @@ import (
 
 // Config stores ginSwagger configuration variables.
 type Config struct {
-	//The url pointing to API definition (normally swagger.json or swagger.yaml). Default is doc.json
+	//The url pointing to API definition (normally swagger.json or swagger.yaml). Default is `doc.json`.
 	URL string
 }
 
