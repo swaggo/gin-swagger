@@ -13,16 +13,27 @@ import (
 
 // Config stores ginSwagger configuration variables.
 type Config struct {
-	//The url pointing to API definition (normally swagger.json or swagger.yaml).
+	//The url pointing to API definition (normally swagger.json or swagger.yaml). Default is doc.json
 	URL string
 }
 
-var defaultConfig = &Config{
-	URL: "http://localhost:8080/swagger/doc.json", //The url pointing to API definition
+// URL presents the url pointing to API definition (normally swagger.json or swagger.yaml).
+func URL(url string) func(c *Config) {
+	return func(c *Config) {
+		c.URL = url
+	}
 }
 
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
-func WrapHandler(h *webdav.Handler) gin.HandlerFunc {
+func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
+	defaultConfig := &Config{
+		URL: "doc.json",
+	}
+
+	for _, c := range confs {
+		c(defaultConfig)
+	}
+
 	return CustomWrapHandler(defaultConfig, h)
 }
 
