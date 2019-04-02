@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"os"
 	"regexp"
+	"strings"
 
 	"golang.org/x/net/webdav"
 
@@ -60,6 +61,16 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 		path := matches[2]
 		prefix := matches[1]
 		h.Prefix = prefix
+
+		if strings.HasSuffix(path, ".html") {
+			c.Header("Content-Type", "text/html; charset=utf-8")
+		} else if strings.HasSuffix(path, ".css") {
+			c.Header("Content-Type", "text/css; charset=utf-8")
+		} else if strings.HasSuffix(path, ".js") {
+			c.Header("Content-Type", "application/javascript")
+		} else if strings.HasSuffix(path, ".json") {
+			c.Header("Content-Type", "application/json")
+		}
 
 		switch path {
 		case "index.html":
