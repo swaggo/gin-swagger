@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
-	_ "github.com/swaggo/gin-swagger/example/docs"
+	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 )
 
 func TestWrapHandler(t *testing.T) {
