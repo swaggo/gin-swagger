@@ -5,7 +5,7 @@ import (
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
-	_ "github.com/swaggo/gin-swagger/example/docs"
+	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 )
 
 // @title Swagger Example API

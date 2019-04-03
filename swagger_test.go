@@ -1,6 +1,7 @@
 package ginSwagger
 
 import (
+	"github.com/gin-contrib/gzip"
 	"net/http/httptest"
 	"os"
 	"testing"
@@ -9,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
-	_ "github.com/swaggo/gin-swagger/example/docs"
+	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 )
 
 func TestWrapHandler(t *testing.T) {
@@ -95,6 +96,31 @@ func TestDisablingCustomWrapHandler(t *testing.T) {
 
 	w11 := performRequest("GET", "/disabling/index.html", router)
 	assert.Equal(t, 404, w11.Code)
+}
+
+func TestWithGzipMiddleware(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+
+	router.Use(gzip.Gzip(gzip.BestSpeed))
+
+	router.GET("/*any", WrapHandler(swaggerFiles.Handler))
+
+	w1 := performRequest("GET", "/index.html", router)
+	assert.Equal(t, 200, w1.Code)
+	assert.Equal(t, w1.Header()["Content-Type"][0], "text/html; charset=utf-8")
+
+	w2 := performRequest("GET", "/swagger-ui.css", router)
+	assert.Equal(t, 200, w2.Code)
+	assert.Equal(t, w2.Header()["Content-Type"][0], "text/css; charset=utf-8")
+
+	w3 := performRequest("GET", "/swagger-ui-bundle.js", router)
+	assert.Equal(t, 200, w3.Code)
+	assert.Equal(t, w3.Header()["Content-Type"][0], "application/javascript")
+
+	w4 := performRequest("GET", "/doc.json", router)
+	assert.Equal(t, 200, w4.Code)
+	assert.Equal(t, w4.Header()["Content-Type"][0], "application/json")
 }
 
 func performRequest(method, target string, router *gin.Engine) *httptest.ResponseRecorder {
