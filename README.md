@@ -21,7 +21,7 @@ $ go get -u github.com/swaggo/swag/cmd/swag
 ```sh
 $ swag init
 ```
-4.Download [gin-swagger](https://github.com/swaggo/gin-swagger) by using:
+4. Download [gin-swagger](https://github.com/swaggo/gin-swagger) by using:
 ```sh
 $ go get -u github.com/swaggo/gin-swagger
 $ go get -u github.com/swaggo/gin-swagger/swaggerFiles
