@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
 
 	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 )
@@ -28,7 +28,7 @@ func main() {
 
 	r.Use(gzip.Gzip(gzip.BestSpeed))
 
-	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") //The url pointing to API definition
+	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	r.Run()
