@@ -24,7 +24,7 @@ $ swag init
 4. Download [gin-swagger](https://github.com/swaggo/gin-swagger) by using:
 ```sh
 $ go get -u github.com/swaggo/gin-swagger
-$ go get -u github.com/swaggo/gin-swagger/swaggerFiles
+$ go get -u github.com/swaggo/files
 ```
 And import following in your code:
 
