@@ -205,7 +205,8 @@ window.onload = function() {
     plugins: [
       SwaggerUIBundle.plugins.DownloadUrl
     ],
-    layout: "StandaloneLayout"
+	layout: "StandaloneLayout",
+	oauth2RedirectUrl: window.location.href.replace("index.html", "oauth2-redirect.html")
   })
 
   window.ui = ui
