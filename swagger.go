@@ -69,7 +69,7 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 		} else if strings.HasSuffix(path, ".js") {
 			c.Header("Content-Type", "application/javascript")
 		} else if strings.HasSuffix(path, ".json") {
-			c.Header("Content-Type", "application/json")
+			c.Header("Content-Type", "application/json; charset=utf-8")
 		}
 
 		switch path {

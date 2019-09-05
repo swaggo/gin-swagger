@@ -120,7 +120,7 @@ func TestWithGzipMiddleware(t *testing.T) {
 
 	w4 := performRequest("GET", "/doc.json", router)
 	assert.Equal(t, 200, w4.Code)
-	assert.Equal(t, w4.Header()["Content-Type"][0], "application/json")
+	assert.Equal(t, w4.Header()["Content-Type"][0], "application/json; charset=utf-8")
 }
 
 func performRequest(method, target string, router *gin.Engine) *httptest.ResponseRecorder {
