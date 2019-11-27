@@ -59,7 +59,7 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 		specFileName = "doc.json"
 	}
 
-	specRegexStr := strings.ReplaceAll(specFileName, ".", "\\.")
+	specRegexStr := strings.Replace(specFileName, ".", "\\.", -1)
 	var rexp = regexp.MustCompile(`(.*)(index\.html|` + specRegexStr + `|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
 
 	return func(c *gin.Context) {
