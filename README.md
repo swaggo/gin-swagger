@@ -60,12 +60,16 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @host petstore.swagger.io
-// @BasePath /v2
+// @BasePath /api/v2
 func main() {
 	r := gin.New()
 
-	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+	swaggerBase := ginSwagger.SwaggerBase("docs/") // default `swagger/`
+	specFileName := ginSwagger.SpecFileName("swagger.json") // default `doc.json`
+
+	apiGroup := r.Group("/api/v2")
+	// apiGroup.GET("/ping", api.GetPing)
+	apiGroup.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, swaggerBase, specFileName))
 
 	r.Run()
 }

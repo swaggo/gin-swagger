@@ -3,6 +3,7 @@ package ginSwagger
 import (
 	"html/template"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -15,20 +16,29 @@ import (
 // Config stores ginSwagger configuration variables.
 type Config struct {
 	//The url pointing to API definition (normally swagger.json or swagger.yaml). Default is `doc.json`.
-	URL string
+	SpecFileName string
+	SwaggerBase  string
 }
 
-// URL presents the url pointing to API definition (normally swagger.json or swagger.yaml).
-func URL(url string) func(c *Config) {
+// SwaggerBase sets the subpath of swagger router. Default is `swagger/`.
+func SwaggerBase(swaggerBase string) func(c *Config) {
 	return func(c *Config) {
-		c.URL = url
+		c.SwaggerBase = swaggerBase
+	}
+}
+
+// SpecFileName sets name of API definition (normally swagger.json or swagger.yaml).
+func SpecFileName(specFileName string) func(c *Config) {
+	return func(c *Config) {
+		c.SpecFileName = specFileName
 	}
 }
 
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 	defaultConfig := &Config{
-		URL: "doc.json",
+		SpecFileName: "doc.json",
+		SwaggerBase:  "swagger/",
 	}
 
 	for _, c := range confs {
@@ -43,13 +53,20 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 	//create a template with name
 	t := template.New("swagger_index.html")
 	index, _ := t.Parse(swagger_index_templ)
+	specFileName := config.SpecFileName
 
-	var rexp = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
+	if specFileName == "" {
+		specFileName = "doc.json"
+	}
+
+	specRegexStr := strings.ReplaceAll(specFileName, ".", "\\.")
+	var rexp = regexp.MustCompile(`(.*)(index\.html|` + specRegexStr + `|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
 
 	return func(c *gin.Context) {
 
 		type swaggerUIBundle struct {
-			URL string
+			URL               string
+			Oauth2RedirectURL string
 		}
 
 		var matches []string
@@ -75,9 +92,10 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 		switch path {
 		case "index.html":
 			index.Execute(c.Writer, &swaggerUIBundle{
-				URL: config.URL,
+				URL:               filepath.Join(config.SwaggerBase, specFileName),
+				Oauth2RedirectURL: filepath.Join(config.SwaggerBase, "oauth2-redirect.html"),
 			})
-		case "doc.json":
+		case specFileName:
 			doc, err := swag.ReadDoc()
 			if err != nil {
 				panic(err)
@@ -197,7 +215,8 @@ window.onload = function() {
   const ui = SwaggerUIBundle({
     url: "{{.URL}}",
     dom_id: '#swagger-ui',
-    validatorUrl: null,
+	validatorUrl: null,
+	oauth2RedirectUrl: "{{.Oauth2RedirectURL}}",
     presets: [
       SwaggerUIBundle.presets.apis,
       SwaggerUIStandalonePreset
