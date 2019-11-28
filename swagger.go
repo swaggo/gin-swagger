@@ -18,7 +18,7 @@ type Config struct {
 	//The url pointing to API definition (normally swagger.json or swagger.yaml). Default is `doc.json`.
 	SpecFileName string
 	SwaggerBase  string
-	DeepLinking bool
+	DeepLinking  bool
 }
 
 // SwaggerBase sets the subpath of swagger router. Default is `swagger/`.
@@ -47,7 +47,7 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 	defaultConfig := &Config{
 		SpecFileName: "doc.json",
 		SwaggerBase:  "swagger/",
-		DeepLinking: true,
+		DeepLinking:  true,
 	}
 
 	for _, c := range confs {
@@ -76,7 +76,7 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 		type swaggerUIBundle struct {
 			URL               string
 			Oauth2RedirectURL string
-			DeepLinking bool
+			DeepLinking       bool
 		}
 
 		var matches []string
@@ -104,7 +104,7 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 			index.Execute(c.Writer, &swaggerUIBundle{
 				URL:               filepath.Join(config.SwaggerBase, specFileName),
 				Oauth2RedirectURL: filepath.Join(config.SwaggerBase, "oauth2-redirect.html"),
-				DeepLinking: config.DeepLinking,
+				DeepLinking:       config.DeepLinking,
 			})
 		case specFileName:
 			doc, err := swag.ReadDoc()
@@ -226,8 +226,8 @@ window.onload = function() {
   const ui = SwaggerUIBundle({
     url: "{{.URL}}",
     dom_id: '#swagger-ui',
-	  validatorUrl: null,
-	  oauth2RedirectUrl: "{{.Oauth2RedirectURL}}",
+    validatorUrl: null,
+    oauth2RedirectUrl: "{{.Oauth2RedirectURL}}",
     presets: [
       SwaggerUIBundle.presets.apis,
       SwaggerUIStandalonePreset
@@ -235,8 +235,8 @@ window.onload = function() {
     plugins: [
       SwaggerUIBundle.plugins.DownloadUrl
     ],
-	  layout: "StandaloneLayout",
-	  deepLinking: {{.DeepLinking}}
+    layout: "StandaloneLayout",
+    deepLinking: {{.DeepLinking}}
   })
 
   window.ui = ui
