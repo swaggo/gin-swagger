@@ -1,11 +1,11 @@
 package main
 
 import (
+	ginSwagger "github.com/canecat/gin-swagger"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "github.com/swaggo/gin-swagger/example/basic/docs"
+	_ "github.com/canecat/gin-swagger/example/basic/docs"
 )
 
 // @title Swagger Example API
