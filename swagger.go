@@ -75,7 +75,7 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 
 		type swaggerUIBundle struct {
 			URL               string
-			Oauth2RedirectURL string
+			Oauth2RedirectURL template.JS
 			DeepLinking       bool
 		}
 
@@ -103,7 +103,7 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 		case "index.html":
 			index.Execute(c.Writer, &swaggerUIBundle{
 				URL:               filepath.Join(config.SwaggerBase, specFileName),
-				Oauth2RedirectURL: filepath.Join(config.SwaggerBase, "oauth2-redirect.html"),
+				Oauth2RedirectURL: template.JS("`${window.location.protocol}//${window.location.host}" + filepath.Join(config.SwaggerBase, "oauth2-redirect.html") + "`"),
 				DeepLinking:       config.DeepLinking,
 			})
 		case specFileName:
@@ -227,7 +227,7 @@ window.onload = function() {
     url: "{{.URL}}",
     dom_id: '#swagger-ui',
     validatorUrl: null,
-    oauth2RedirectUrl: "{{.Oauth2RedirectURL}}",
+    oauth2RedirectUrl: {{.Oauth2RedirectURL}},
     presets: [
       SwaggerUIBundle.presets.apis,
       SwaggerUIStandalonePreset
