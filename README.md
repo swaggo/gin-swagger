@@ -64,7 +64,7 @@ import (
 func main() {
 	r := gin.New()
 
-	swaggerBase := ginSwagger.SwaggerBase("docs/") // default `swagger/`
+	swaggerBase := ginSwagger.SwaggerBase("/api/v2/docs/") // default `swagger/`
 	specFileName := ginSwagger.SpecFileName("swagger.json") // default `doc.json`
 
 	apiGroup := r.Group("/api/v2")
@@ -75,7 +75,7 @@ func main() {
 }
 ```
 
-5. Run it, and browser to http://localhost:8080/swagger/index.html, you can see Swagger 2.0 Api documents.
+5. Run it, and browse to http://localhost:8080/api/v2/docs/, you can see Swagger 2.0 Api documents.
 
 ![swagger_index.html](https://user-images.githubusercontent.com/8943871/60704329-b7ab0680-9f36-11e9-9184-5c638c05e9c5.png)
 
