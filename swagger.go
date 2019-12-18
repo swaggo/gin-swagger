@@ -267,8 +267,8 @@ window.onload = function() {
   })
 
   ui.initOAuth({
-    clientId: "localhost.vela.care",
-    appName: "notifications"
+    clientId: "{{.Oauth2ClientID}}",
+    appName: "{{.Oauth2AppName}}"
   })
 
   window.ui = ui
