@@ -5,6 +5,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"sync"
 
 	"golang.org/x/net/webdav"
 
@@ -33,6 +34,13 @@ func DeepLinking(deepLinking bool) func(c *Config) {
 	}
 }
 
+// wrapper to fix data race
+// can be deleted if swaggo/files will always initialize prefix
+type Handler struct {
+	sync.Mutex
+	filesHandler *webdav.Handler
+}
+
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 	defaultConfig := &Config{
@@ -44,11 +52,11 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 		c(defaultConfig)
 	}
 
-	return CustomWrapHandler(defaultConfig, h)
+	return CustomWrapHandler(defaultConfig, &Handler{filesHandler: h})
 }
 
 // CustomWrapHandler wraps `http.Handler` into `gin.HandlerFunc`
-func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
+func CustomWrapHandler(config *Config, h *Handler) gin.HandlerFunc {
 	//create a template with name
 	t := template.New("swagger_index.html")
 	index, _ := t.Parse(swagger_index_templ)
@@ -70,7 +78,10 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 		}
 		path := matches[2]
 		prefix := matches[1]
-		h.Prefix = prefix
+
+		h.Lock()
+		h.filesHandler.Prefix = prefix
+		h.Unlock()
 
 		if strings.HasSuffix(path, ".html") {
 			c.Header("Content-Type", "text/html; charset=utf-8")
@@ -96,7 +107,7 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 			c.Writer.Write([]byte(doc))
 			return
 		default:
-			h.ServeHTTP(c.Writer, c.Request)
+			h.filesHandler.ServeHTTP(c.Writer, c.Request)
 		}
 	}
 }
@@ -128,7 +139,7 @@ func DisablingCustomWrapHandler(config *Config, h *webdav.Handler, envName strin
 		}
 	}
 
-	return CustomWrapHandler(config, h)
+	return CustomWrapHandler(config, &Handler{filesHandler: h})
 }
 
 const swagger_index_templ = `<!-- HTML for static distribution bundle build -->
