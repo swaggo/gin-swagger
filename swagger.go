@@ -88,7 +88,7 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 				URL:         config.URL,
 				DeepLinking: config.DeepLinking,
 			})
-		case "doc.json":
+		case config.URL:
 			doc, err := swag.ReadDoc()
 			if err != nil {
 				panic(err)
