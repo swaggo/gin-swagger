@@ -5,6 +5,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"sync"
 
 	"golang.org/x/net/webdav"
 
@@ -54,6 +55,7 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 	index, _ := t.Parse(swagger_index_templ)
 
 	var rexp = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
+	var locker sync.Mutex
 
 	return func(c *gin.Context) {
 
@@ -70,7 +72,9 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 		}
 		path := matches[2]
 		prefix := matches[1]
+		locker.Lock()
 		h.Prefix = prefix
+		locker.Unlock()
 
 		if strings.HasSuffix(path, ".html") {
 			c.Header("Content-Type", "text/html; charset=utf-8")
@@ -96,7 +100,9 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 			c.Writer.Write([]byte(doc))
 			return
 		default:
+			locker.Lock()
 			h.ServeHTTP(c.Writer, c.Request)
+			locker.Unlock()
 		}
 	}
 }
