@@ -1,10 +1,11 @@
 package main
 
 import (
+	ginSwagger "gin-swagger"
+	swaggerFiles "gin-swagger/swaggerFiles"
+
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
 
 	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 )

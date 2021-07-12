@@ -2,12 +2,11 @@ package ginSwagger
 
 import (
 	"html/template"
+	"net/http"
 	"os"
 	"regexp"
 	"strings"
 	"sync"
-
-	"golang.org/x/net/webdav"
 
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/swag"
@@ -35,7 +34,7 @@ func DeepLinking(deepLinking bool) func(c *Config) {
 }
 
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
-func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
+func WrapHandler(h http.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 	defaultConfig := &Config{
 		URL:         "doc.json",
 		DeepLinking: true,
@@ -49,7 +48,7 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 }
 
 // CustomWrapHandler wraps `http.Handler` into `gin.HandlerFunc`
-func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
+func CustomWrapHandler(config *Config, h http.Handler) gin.HandlerFunc {
 	//create a template with name
 	t := template.New("swagger_index.html")
 	index, _ := t.Parse(swagger_index_templ)
@@ -74,7 +73,7 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 		prefix := matches[1]
 
 		locker.Lock()
-		h.Prefix = prefix
+		handler := http.StripPrefix(prefix, h)
 		locker.Unlock()
 
 		if strings.HasSuffix(path, ".html") {
@@ -102,7 +101,7 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 			return
 		default:
 			locker.RLock()
-			h.ServeHTTP(c.Writer, c.Request)
+			gin.WrapH(handler)(c)
 			locker.RUnlock()
 		}
 	}
@@ -110,7 +109,7 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 
 // DisablingWrapHandler turn handler off
 // if specified environment variable passed
-func DisablingWrapHandler(h *webdav.Handler, envName string) gin.HandlerFunc {
+func DisablingWrapHandler(h http.Handler, envName string) gin.HandlerFunc {
 	eFlag := os.Getenv(envName)
 	if eFlag != "" {
 		return func(c *gin.Context) {
@@ -125,7 +124,7 @@ func DisablingWrapHandler(h *webdav.Handler, envName string) gin.HandlerFunc {
 
 // DisablingCustomWrapHandler turn handler off
 // if specified environment variable passed
-func DisablingCustomWrapHandler(config *Config, h *webdav.Handler, envName string) gin.HandlerFunc {
+func DisablingCustomWrapHandler(config *Config, h http.Handler, envName string) gin.HandlerFunc {
 	eFlag := os.Getenv(envName)
 	if eFlag != "" {
 		return func(c *gin.Context) {

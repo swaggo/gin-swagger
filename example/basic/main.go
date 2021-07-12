@@ -1,9 +1,11 @@
 package main
 
 import (
+	"gin-swagger/swaggerFiles"
+
+	ginSwagger "gin-swagger"
+
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
 
 	"github.com/swaggo/gin-swagger/example/basic/api"
 
