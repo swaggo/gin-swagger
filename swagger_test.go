@@ -12,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
-	_ "gin-swagger/example/basic/docs"
+	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 )
 
 func TestWrapHandler(t *testing.T) {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	ginSwagger "gin-swagger"
-	swaggerFiles "gin-swagger/swaggerFiles"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/gin-swagger/swaggerFiles"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
