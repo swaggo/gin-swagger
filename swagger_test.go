@@ -2,6 +2,8 @@ package ginSwagger
 
 import (
 	"github.com/gin-contrib/gzip"
+	"github.com/swaggo/swag"
+
 	"net/http/httptest"
 	"os"
 	"testing"
@@ -9,15 +11,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-
-	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 )
+
+type mockedSwag struct{}
+
+func (s *mockedSwag) ReadDoc() string {
+	return `{
+}`
+}
 
 func TestWrapHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 
-	router.GET("/*any", WrapHandler(swaggerFiles.Handler))
+	router.GET("/*any", WrapHandler(swaggerFiles.Handler, URL("https://github.com/swaggo/gin-swagger")))
 
 	w1 := performRequest("GET", "/index.html", router)
 	assert.Equal(t, 200, w1.Code)
@@ -33,6 +40,11 @@ func TestWrapCustomHandler(t *testing.T) {
 	assert.Equal(t, 200, w1.Code)
 
 	w2 := performRequest("GET", "/doc.json", router)
+	assert.Equal(t, 500, w2.Code)
+
+	swag.Register(swag.Name, &mockedSwag{})
+
+	w2 = performRequest("GET", "/doc.json", router)
 	assert.Equal(t, 200, w2.Code)
 
 	w3 := performRequest("GET", "/favicon-16x16.png", router)
@@ -128,4 +140,20 @@ func performRequest(method, target string, router *gin.Engine) *httptest.Respons
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, r)
 	return w
+}
+
+func TestURL(t *testing.T) {
+	expected := "https://github.com/swaggo/http-swagger"
+	cfg := Config{}
+	configFunc := URL(expected)
+	configFunc(&cfg)
+	assert.Equal(t, expected, cfg.URL)
+}
+
+func TestDeepLinking(t *testing.T) {
+	expected := true
+	cfg := Config{}
+	configFunc := DeepLinking(expected)
+	configFunc(&cfg)
+	assert.Equal(t, expected, cfg.DeepLinking)
 }
