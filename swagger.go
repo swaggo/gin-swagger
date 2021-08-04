@@ -2,6 +2,7 @@ package ginSwagger
 
 import (
 	"html/template"
+	"net/http"
 	"os"
 	"regexp"
 	"strings"
@@ -96,10 +97,11 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 		case "doc.json":
 			doc, err := swag.ReadDoc()
 			if err != nil {
-				panic(err)
+				c.AbortWithStatus(http.StatusInternalServerError)
+
+				return
 			}
 			c.Writer.Write([]byte(doc))
-			return
 		default:
 			locker.RLock()
 			h.ServeHTTP(c.Writer, c.Request)
