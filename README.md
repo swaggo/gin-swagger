@@ -39,7 +39,7 @@ import "github.com/swaggo/files" // swagger embed files
 ### Canonical example:
 Now assume you have implemented a simple api as following:
 ```go
-//A get function which returns a hello world string by json 
+// A get function which returns a hello world string by json 
 func Helloworld(g *gin.Context)  {
 	g.JSON(http.StatusOK,"helloworld")
 }
