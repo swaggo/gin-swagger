@@ -17,8 +17,9 @@ import (
 // Config stores ginSwagger configuration variables.
 type Config struct {
 	//The url pointing to API definition (normally swagger.json or swagger.yaml). Default is `doc.json`.
-	URL         string
-	DeepLinking bool
+	URL               string
+	DeepLinking       bool
+	ModelsExpandDepth int
 }
 
 // URL presents the url pointing to API definition (normally swagger.json or swagger.yaml).
@@ -35,11 +36,19 @@ func DeepLinking(deepLinking bool) func(c *Config) {
 	}
 }
 
+// ModelsExpandDepth set the swagger default models expand depth configuration
+func ModelsExpandDepth(depth int) func(c *Config) {
+	return func(c *Config) {
+		c.ModelsExpandDepth = depth
+	}
+}
+
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 	defaultConfig := &Config{
-		URL:         "doc.json",
-		DeepLinking: true,
+		URL:               "doc.json",
+		DeepLinking:       true,
+		ModelsExpandDepth: 1,
 	}
 
 	for _, c := range confs {
@@ -61,8 +70,9 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		type swaggerUIBundle struct {
-			URL         string
-			DeepLinking bool
+			URL               string
+			DeepLinking       bool
+			ModelsExpandDepth int
 		}
 
 		var matches []string
@@ -91,8 +101,9 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 		switch path {
 		case "index.html":
 			index.Execute(c.Writer, &swaggerUIBundle{
-				URL:         config.URL,
-				DeepLinking: config.DeepLinking,
+				URL:               config.URL,
+				DeepLinking:       config.DeepLinking,
+				ModelsExpandDepth: config.ModelsExpandDepth,
 			})
 		case "doc.json":
 			doc, err := swag.ReadDoc()
@@ -226,7 +237,8 @@ window.onload = function() {
       SwaggerUIBundle.plugins.DownloadUrl
     ],
 	layout: "StandaloneLayout",
-	deepLinking: {{.DeepLinking}}
+	deepLinking: {{.DeepLinking}}, 
+	defaultModelsExpandDepth: {{.ModelsExpandDepth}}
   })
 
   window.ui = ui
