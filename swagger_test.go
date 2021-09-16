@@ -157,3 +157,11 @@ func TestDeepLinking(t *testing.T) {
 	configFunc(&cfg)
 	assert.Equal(t, expected, cfg.DeepLinking)
 }
+
+func TestModelsExpandDepth(t *testing.T) {
+	expected := 2
+	cfg := Config{}
+	configFunc := ModelsExpandDepth(expected)
+	configFunc(&cfg)
+	assert.Equal(t, expected, cfg.ModelsExpandDepth)
+}
