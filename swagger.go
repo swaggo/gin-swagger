@@ -17,8 +17,9 @@ import (
 // Config stores ginSwagger configuration variables.
 type Config struct {
 	//The url pointing to API definition (normally swagger.json or swagger.yaml). Default is `doc.json`.
-	URL         string
-	DeepLinking bool
+	URL                      string
+	DeepLinking              bool
+	DefaultModelsExpandDepth int
 }
 
 // URL presents the url pointing to API definition (normally swagger.json or swagger.yaml).
@@ -35,11 +36,20 @@ func DeepLinking(deepLinking bool) func(c *Config) {
 	}
 }
 
+// DefaultModelsExpandDepth set the default expansion depth for models
+// (set to -1 completely hide the models).
+func DefaultModelsExpandDepth(depth int) func(c *Config) {
+	return func(c *Config) {
+		c.DefaultModelsExpandDepth = depth
+	}
+}
+
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 	defaultConfig := &Config{
-		URL:         "doc.json",
-		DeepLinking: true,
+		URL:                      "doc.json",
+		DeepLinking:              true,
+		DefaultModelsExpandDepth: 1,
 	}
 
 	for _, c := range confs {
@@ -61,8 +71,9 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		type swaggerUIBundle struct {
-			URL         string
-			DeepLinking bool
+			URL                      string
+			DeepLinking              bool
+			DefaultModelsExpandDepth int
 		}
 
 		var matches []string
@@ -91,8 +102,9 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 		switch path {
 		case "index.html":
 			index.Execute(c.Writer, &swaggerUIBundle{
-				URL:         config.URL,
-				DeepLinking: config.DeepLinking,
+				URL:                      config.URL,
+				DeepLinking:              config.DeepLinking,
+				DefaultModelsExpandDepth: config.DefaultModelsExpandDepth,
 			})
 		case "doc.json":
 			doc, err := swag.ReadDoc()
@@ -226,7 +238,8 @@ window.onload = function() {
       SwaggerUIBundle.plugins.DownloadUrl
     ],
 	layout: "StandaloneLayout",
-	deepLinking: {{.DeepLinking}}
+	deepLinking: {{.DeepLinking}},
+	defaultModelsExpandDepth: {{.DefaultModelsExpandDepth}}
   })
 
   window.ui = ui
