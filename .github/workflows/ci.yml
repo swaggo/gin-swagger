@@ -1,0 +1,20 @@
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go: [ '1.13.x', '1.14.x', '1.15.x', '1.16.x' ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go }}
+      - name: test
+        run: go test -coverprofile=coverage.txt -covermode=atomic
+      - name: coverage
+        run: bash <(curl -s https://codecov.io/bash)
