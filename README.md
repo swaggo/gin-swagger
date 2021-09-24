@@ -127,3 +127,25 @@ Demo project tree, `swag init` is run at relative `.`
 ├── go.sum
 └── main.go
 ```
+
+## Configuration
+
+You can configure Swagger using different configuration options
+
+```go
+func main() {
+	r := gin.New()
+
+	ginSwagger.WrapHandler(swaggerFiles.Handler, 
+		ginSwagger.URL("http://localhost:8080/swagger/doc.json"), 
+		ginSwagger.DefaultModelsExpandDepth(-1)))
+
+	r.Run()
+}
+```
+
+| Option                   | Type   | Default    | Description                                                               |
+|--------------------------|--------|------------|---------------------------------------------------------------------------|
+| URL                      | string | "doc.json" | URL pointing to API definition                                            |
+| DeepLinking              | bool   | true       | Swagger deeplinking configuration                                         |
+| DefaultModelsExpandDepth | int    | 1          | Default expansion depth for models (set to -1 completely hide the models) |
