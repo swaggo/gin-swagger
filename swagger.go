@@ -1,6 +1,7 @@
 package ginSwagger
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"os"
@@ -76,7 +77,12 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 			DefaultModelsExpandDepth int
 		}
 
-		var matches []string
+		matches := rexp.FindStringSubmatch(c.Request.RequestURI)
+
+		if len(matches) == 0 {
+			c.Request.RequestURI = fmt.Sprintf("%vindex.html", c.Request.RequestURI)
+		}
+
 		if matches = rexp.FindStringSubmatch(c.Request.RequestURI); len(matches) != 3 {
 			c.Status(404)
 			c.Writer.Write([]byte("404 page not found"))
