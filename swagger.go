@@ -4,8 +4,8 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
-	"strings"
 	"sync"
 
 	"golang.org/x/net/webdav"
@@ -19,6 +19,7 @@ type Config struct {
 	//The url pointing to API definition (normally swagger.json or swagger.yaml). Default is `doc.json`.
 	URL                      string
 	DeepLinking              bool
+	DocExpansion             string
 	DefaultModelsExpandDepth int
 }
 
@@ -26,6 +27,13 @@ type Config struct {
 func URL(url string) func(c *Config) {
 	return func(c *Config) {
 		c.URL = url
+	}
+}
+
+// DocExpansion list, full, none.
+func DocExpansion(docExpansion string) func(c *Config) {
+	return func(c *Config) {
+		c.DocExpansion = docExpansion
 	}
 }
 
@@ -49,6 +57,7 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 	defaultConfig := &Config{
 		URL:                      "doc.json",
 		DeepLinking:              true,
+		DocExpansion:             "list",
 		DefaultModelsExpandDepth: 1,
 	}
 
@@ -60,52 +69,43 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 }
 
 // CustomWrapHandler wraps `http.Handler` into `gin.HandlerFunc`
-func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
-	//create a template with name
+func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc {
+	var once sync.Once
+
+	// create a template with name
 	t := template.New("swagger_index.html")
 	index, _ := t.Parse(swagger_index_templ)
 
 	var rexp = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
-	var locker sync.RWMutex
 
 	return func(c *gin.Context) {
+		matches := rexp.FindStringSubmatch(c.Request.RequestURI)
 
-		type swaggerUIBundle struct {
-			URL                      string
-			DeepLinking              bool
-			DefaultModelsExpandDepth int
-		}
-
-		var matches []string
-		if matches = rexp.FindStringSubmatch(c.Request.RequestURI); len(matches) != 3 {
+		if len(matches) != 3 {
 			c.Status(404)
-			c.Writer.Write([]byte("404 page not found"))
+			_, _ = c.Writer.Write([]byte("404 page not found"))
 			return
 		}
+
 		path := matches[2]
-		prefix := matches[1]
+		once.Do(func() {
+			handler.Prefix = matches[1]
+		})
 
-		locker.Lock()
-		h.Prefix = prefix
-		locker.Unlock()
-
-		if strings.HasSuffix(path, ".html") {
+		switch filepath.Ext(path) {
+		case ".html":
 			c.Header("Content-Type", "text/html; charset=utf-8")
-		} else if strings.HasSuffix(path, ".css") {
+		case ".css":
 			c.Header("Content-Type", "text/css; charset=utf-8")
-		} else if strings.HasSuffix(path, ".js") {
+		case ".js":
 			c.Header("Content-Type", "application/javascript")
-		} else if strings.HasSuffix(path, ".json") {
+		case ".json":
 			c.Header("Content-Type", "application/json; charset=utf-8")
 		}
 
 		switch path {
 		case "index.html":
-			index.Execute(c.Writer, &swaggerUIBundle{
-				URL:                      config.URL,
-				DeepLinking:              config.DeepLinking,
-				DefaultModelsExpandDepth: config.DefaultModelsExpandDepth,
-			})
+			_ = index.Execute(c.Writer, config)
 		case "doc.json":
 			doc, err := swag.ReadDoc()
 			if err != nil {
@@ -113,11 +113,9 @@ func CustomWrapHandler(config *Config, h *webdav.Handler) gin.HandlerFunc {
 
 				return
 			}
-			c.Writer.Write([]byte(doc))
+			_, _ = c.Writer.Write([]byte(doc))
 		default:
-			locker.RLock()
-			h.ServeHTTP(c.Writer, c.Request)
-			locker.RUnlock()
+			handler.ServeHTTP(c.Writer, c.Request)
 		}
 	}
 }
@@ -238,6 +236,7 @@ window.onload = function() {
       SwaggerUIBundle.plugins.DownloadUrl
     ],
 	layout: "StandaloneLayout",
+    docExpansion: "{{.DocExpansion}}",
 	deepLinking: {{.DeepLinking}},
 	defaultModelsExpandDepth: {{.DefaultModelsExpandDepth}}
   })
