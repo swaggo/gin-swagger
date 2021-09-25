@@ -1,5 +1,5 @@
-checksum:
-  name_template: 'checksums.txt'
+builds:
+  - skip: true
 snapshot:
   name_template: "{{ .Tag }}-next"
 changelog:
