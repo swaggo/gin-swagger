@@ -6,6 +6,7 @@ gin middleware to automatically generate RESTFUL API documentation with Swagger 
 [![Codecov branch](https://img.shields.io/codecov/c/github/swaggo/gin-swagger/master.svg)](https://codecov.io/gh/swaggo/gin-swagger)
 [![Go Report Card](https://goreportcard.com/badge/github.com/swaggo/gin-swagger)](https://goreportcard.com/report/github.com/swaggo/gin-swagger)
 [![GoDoc](https://godoc.org/github.com/swaggo/gin-swagger?status.svg)](https://godoc.org/github.com/swaggo/gin-swagger)
+[![Release](https://img.shields.io/github/release/swaggo/gin-swagger.svg?style=flat-square)](https://github.com/swaggo/gin-swagger/releases)
 
 
 ## Usage
