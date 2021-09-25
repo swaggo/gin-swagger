@@ -1,12 +1,13 @@
 package ginSwagger
 
 import (
-	"github.com/gin-contrib/gzip"
-	"github.com/swaggo/swag"
-
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
+
+	"github.com/gin-contrib/gzip"
+	"github.com/swaggo/swag"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -74,7 +75,7 @@ func TestDisablingWrapHandler(t *testing.T) {
 	w4 := performRequest("GET", "/simple/notfound", router)
 	assert.Equal(t, 404, w4.Code)
 
-	os.Setenv(disablingKey, "true")
+	_ = os.Setenv(disablingKey, "true")
 
 	router.GET("/disabling/*any", DisablingWrapHandler(swaggerFiles.Handler, disablingKey))
 
@@ -102,7 +103,7 @@ func TestDisablingCustomWrapHandler(t *testing.T) {
 	w1 := performRequest("GET", "/simple/index.html", router)
 	assert.Equal(t, 200, w1.Code)
 
-	os.Setenv(disablingKey, "true")
+	_ = os.Setenv(disablingKey, "true")
 
 	router.GET("/disabling/*any", DisablingCustomWrapHandler(&Config{}, swaggerFiles.Handler, disablingKey))
 
@@ -143,25 +144,63 @@ func performRequest(method, target string, router *gin.Engine) *httptest.Respons
 }
 
 func TestURL(t *testing.T) {
-	expected := "https://github.com/swaggo/http-swagger"
 	cfg := Config{}
+
+	expected := "https://github.com/swaggo/http-swagger"
 	configFunc := URL(expected)
 	configFunc(&cfg)
 	assert.Equal(t, expected, cfg.URL)
 }
 
-func TestDeepLinking(t *testing.T) {
-	expected := true
-	cfg := Config{}
-	configFunc := DeepLinking(expected)
+func TestDocExpansion(t *testing.T) {
+	var cfg Config
+
+	expected := "list"
+	configFunc := DocExpansion(expected)
 	configFunc(&cfg)
-	assert.Equal(t, expected, cfg.DeepLinking)
+	assert.Equal(t, expected, cfg.DocExpansion)
+
+	expected = "full"
+	configFunc = DocExpansion(expected)
+	configFunc(&cfg)
+	assert.Equal(t, expected, cfg.DocExpansion)
+
+	expected = "none"
+	configFunc = DocExpansion(expected)
+	configFunc(&cfg)
+	assert.Equal(t, expected, cfg.DocExpansion)
+}
+
+func TestDeepLinking(t *testing.T) {
+	var cfg Config
+	assert.Equal(t, false, cfg.DeepLinking)
+
+	configFunc := DeepLinking(true)
+	configFunc(&cfg)
+	assert.Equal(t, true, cfg.DeepLinking)
+
+	configFunc = DeepLinking(false)
+	configFunc(&cfg)
+	assert.Equal(t, false, cfg.DeepLinking)
+
 }
 
 func TestDefaultModelsExpandDepth(t *testing.T) {
+	var cfg Config
+
+	assert.Equal(t, 0, cfg.DefaultModelsExpandDepth)
+
 	expected := -1
-	cfg := Config{}
 	configFunc := DefaultModelsExpandDepth(expected)
 	configFunc(&cfg)
 	assert.Equal(t, expected, cfg.DefaultModelsExpandDepth)
+
+	expected = 1
+	configFunc = DefaultModelsExpandDepth(expected)
+	configFunc(&cfg)
+	assert.Equal(t, expected, cfg.DefaultModelsExpandDepth)
+}
+
+func TestDeepLinking2(t *testing.T) {
+	t.Logf("extension: %s", filepath.Ext("/asas/index.html"))
 }

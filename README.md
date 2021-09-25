@@ -147,5 +147,6 @@ func main() {
 | Option                   | Type   | Default    | Description                                                               |
 |--------------------------|--------|------------|---------------------------------------------------------------------------|
 | URL                      | string | "doc.json" | URL pointing to API definition                                            |
-| DeepLinking              | bool   | true       | Swagger deeplinking configuration                                         |
+| DocExpantion             | string | "list"     | Controls the default expansion setting for the operations and tags. It can be 'list' (expands only the tags), 'full' (expands the tags and operations) or 'none' (expands nothing). |
+| DeepLinking              | bool   | true       | If set to true, enables deep linking for tags and operations. See the Deep Linking documentation for more information.|
 | DefaultModelsExpandDepth | int    | 1          | Default expansion depth for models (set to -1 completely hide the models) |
