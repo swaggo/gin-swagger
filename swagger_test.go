@@ -204,3 +204,19 @@ func TestDefaultModelsExpandDepth(t *testing.T) {
 func TestDeepLinking2(t *testing.T) {
 	t.Logf("extension: %s", filepath.Ext("/asas/index.html"))
 }
+
+func TestRegistrationName(t *testing.T) {
+	var cfg Config
+
+	assert.Equal(t, "", cfg.RegistrationName)
+
+	expected := swag.Name
+	configFunc := RegistrationName(expected)
+	configFunc(&cfg)
+	assert.Equal(t, expected, cfg.RegistrationName)
+
+	expected = "custom_name"
+	configFunc = RegistrationName(expected)
+	configFunc(&cfg)
+	assert.Equal(t, expected, cfg.RegistrationName)
+}
