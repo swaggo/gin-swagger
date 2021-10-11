@@ -21,7 +21,7 @@ type Config struct {
 	DeepLinking              bool
 	DocExpansion             string
 	DefaultModelsExpandDepth int
-	RegistrationName         string
+	InstanceName             string
 }
 
 // URL presents the url pointing to API definition (normally swagger.json or swagger.yaml).
@@ -53,11 +53,11 @@ func DefaultModelsExpandDepth(depth int) func(c *Config) {
 	}
 }
 
-// RegistrationName set the registration name that was used to generate the swagger documents.
+// InstanceName set the instance name that was used to generate the swagger documents.
 // Defaults to swag.Name ("swagger").
-func RegistrationName(name string) func(c *Config) {
+func InstanceName(name string) func(c *Config) {
 	return func(c *Config) {
-		c.RegistrationName = name
+		c.InstanceName = name
 	}
 }
 
@@ -68,7 +68,7 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 		DeepLinking:              true,
 		DocExpansion:             "list",
 		DefaultModelsExpandDepth: 1,
-		RegistrationName:         swag.Name,
+		InstanceName:             swag.Name,
 	}
 
 	for _, c := range confs {
@@ -82,8 +82,8 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc {
 	var once sync.Once
 
-	if config.RegistrationName == "" {
-		config.RegistrationName = swag.Name
+	if config.InstanceName == "" {
+		config.InstanceName = swag.Name
 	}
 
 	// create a template with name
@@ -121,7 +121,7 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 		case "index.html":
 			_ = index.Execute(c.Writer, config)
 		case "doc.json":
-			doc, err := swag.ReadDoc(config.RegistrationName)
+			doc, err := swag.ReadDoc(config.InstanceName)
 			if err != nil {
 				c.AbortWithStatus(http.StatusInternalServerError)
 
