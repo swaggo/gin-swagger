@@ -99,6 +99,8 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 			c.Header("Content-Type", "text/css; charset=utf-8")
 		case ".js":
 			c.Header("Content-Type", "application/javascript")
+		case ".png":
+			c.Header("Content-Type", "image/png")
 		case ".json":
 			c.Header("Content-Type", "application/json; charset=utf-8")
 		}
