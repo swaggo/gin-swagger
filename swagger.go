@@ -21,6 +21,7 @@ type Config struct {
 	DeepLinking              bool
 	DocExpansion             string
 	DefaultModelsExpandDepth int
+	InstanceName             string
 }
 
 // URL presents the url pointing to API definition (normally swagger.json or swagger.yaml).
@@ -109,7 +110,7 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 		case "index.html":
 			_ = index.Execute(c.Writer, config)
 		case "doc.json":
-			doc, err := swag.ReadDoc()
+			doc, err := swag.ReadDoc(config.InstanceName)
 			if err != nil {
 				c.AbortWithStatus(http.StatusInternalServerError)
 
