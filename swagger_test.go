@@ -111,6 +111,18 @@ func TestDisablingCustomWrapHandler(t *testing.T) {
 	assert.Equal(t, 404, w11.Code)
 }
 
+func TestNamedCustomWrapHandler(t *testing.T) {
+	router := gin.New()
+	gin.SetMode(gin.TestMode)
+
+	swag.Register("test", &mockedSwag{})
+
+	router.GET("/swagger/*any", CustomWrapHandler(&Config{InstanceName: "test"}, swaggerFiles.Handler))
+
+	w1 := performRequest("GET", "/swagger/doc.json", router)
+	assert.Equal(t, 200, w1.Code)
+}
+
 func TestWithGzipMiddleware(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
