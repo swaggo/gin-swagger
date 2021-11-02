@@ -70,6 +70,11 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 
 // CustomWrapHandler wraps `http.Handler` into `gin.HandlerFunc`
 func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc {
+	return WrapHandlerName(swag.Name, config, handler)
+}
+
+// WrapHandlerName wraps `http.Handler` into `gin.HandlerFunc`.
+func WrapHandlerName(name string, config *Config, handler *webdav.Handler) gin.HandlerFunc {
 	var once sync.Once
 
 	// create a template with name
@@ -107,7 +112,7 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 		case "index.html":
 			_ = index.Execute(c.Writer, config)
 		case "doc.json":
-			doc, err := swag.ReadDoc()
+			doc, err := swag.ReadDoc(name)
 			if err != nil {
 				c.AbortWithStatus(http.StatusInternalServerError)
 
