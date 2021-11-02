@@ -16,7 +16,8 @@ import (
 
 // Config stores ginSwagger configuration variables.
 type Config struct {
-	//The url pointing to API definition (normally swagger.json or swagger.yaml). Default is `doc.json`.
+	InstanceName string
+	// The url pointing to API definition (normally swagger.json or swagger.yaml). Default is `doc.json`.
 	URL                      string
 	DeepLinking              bool
 	DocExpansion             string
@@ -70,11 +71,6 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 
 // CustomWrapHandler wraps `http.Handler` into `gin.HandlerFunc`
 func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc {
-	return WrapHandlerName(swag.Name, config, handler)
-}
-
-// WrapHandlerName wraps `http.Handler` into `gin.HandlerFunc`.
-func WrapHandlerName(name string, config *Config, handler *webdav.Handler) gin.HandlerFunc {
 	var once sync.Once
 
 	// create a template with name
@@ -82,6 +78,11 @@ func WrapHandlerName(name string, config *Config, handler *webdav.Handler) gin.H
 	index, _ := t.Parse(swagger_index_templ)
 
 	var rexp = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
+
+	name := swag.Name
+	if len(config.InstanceName) > 0 {
+		name = config.InstanceName
+	}
 
 	return func(c *gin.Context) {
 		matches := rexp.FindStringSubmatch(c.Request.RequestURI)
