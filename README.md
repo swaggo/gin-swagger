@@ -139,7 +139,7 @@ func main() {
 
 	ginSwagger.WrapHandler(swaggerFiles.Handler, 
 		ginSwagger.URL("http://localhost:8080/swagger/doc.json"), 
-		ginSwagger.DefaultModelsExpandDepth(-1)))
+		ginSwagger.DefaultModelsExpandDepth(-1))
 
 	r.Run()
 }
