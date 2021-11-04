@@ -2,11 +2,11 @@
 
 gin middleware to automatically generate RESTFUL API documentation with Swagger 2.0.
 
-[![Build Status](https://github.com/alvarogf97/gin-swagger/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/features/actions)
+[![Build Status](https://github.com/swaggo/gin-swagger/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/features/actions)
 [![Codecov branch](https://img.shields.io/codecov/c/github/swaggo/gin-swagger/master.svg)](https://codecov.io/gh/swaggo/gin-swagger)
-[![Go Report Card](https://goreportcard.com/badge/github.com/alvarogf97/gin-swagger)](https://goreportcard.com/report/github.com/alvarogf97/gin-swagger)
-[![GoDoc](https://godoc.org/github.com/alvarogf97/gin-swagger?status.svg)](https://godoc.org/github.com/alvarogf97/gin-swagger)
-[![Release](https://img.shields.io/github/release/swaggo/gin-swagger.svg?style=flat-square)](https://github.com/alvarogf97/gin-swagger/releases)
+[![Go Report Card](https://goreportcard.com/badge/github.com/swaggo/gin-swagger)](https://goreportcard.com/report/github.com/swaggo/gin-swagger)
+[![GoDoc](https://godoc.org/github.com/swaggo/gin-swagger?status.svg)](https://godoc.org/github.com/swaggo/gin-swagger)
+[![Release](https://img.shields.io/github/release/swaggo/gin-swagger.svg?style=flat-square)](https://github.com/swaggo/gin-swagger/releases)
 
 ## Usage
 
@@ -27,17 +27,17 @@ go get -u github.com/swaggo/swag/cmd/swag
 swag init
 ```
 
-4. Download [gin-swagger](https://github.com/alvarogf97/gin-swagger) by using:
+4. Download [gin-swagger](https://github.com/swaggo/gin-swagger) by using:
 
 ```sh
-go get -u github.com/alvarogf97/gin-swagger
+go get -u github.com/swaggo/gin-swagger
 go get -u github.com/swaggo/files
 ```
 
 Import following in your code:
 
 ```go
-import "github.com/alvarogf97/gin-swagger" // gin-swagger middleware
+import "github.com/swaggo/gin-swagger" // gin-swagger middleware
 import "github.com/swaggo/files" // swagger embed files
 
 ```
@@ -96,7 +96,7 @@ import (
    "github.com/gin-gonic/gin"
    docs "github.com/go-project-name/docs"
    swaggerfiles "github.com/swaggo/files"
-   ginSwagger "github.com/alvarogf97/gin-swagger"
+   ginSwagger "github.com/swaggo/gin-swagger"
    "net/http"
 )
 // @BasePath /api/v1
