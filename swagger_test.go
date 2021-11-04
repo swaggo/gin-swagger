@@ -210,3 +210,19 @@ func TestDefaultModelsExpandDepth(t *testing.T) {
 	configFunc(&cfg)
 	assert.Equal(t, expected, cfg.DefaultModelsExpandDepth)
 }
+
+func TestInstanceName(t *testing.T) {
+	var cfg Config
+
+	assert.Equal(t, "", cfg.InstanceName)
+
+	expected := swag.Name
+	configFunc := InstanceName(expected)
+	configFunc(&cfg)
+	assert.Equal(t, expected, cfg.InstanceName)
+
+	expected = "custom_name"
+	configFunc = InstanceName(expected)
+	configFunc(&cfg)
+	assert.Equal(t, expected, cfg.InstanceName)
+}
