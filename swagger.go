@@ -22,7 +22,7 @@ type Config struct {
 	DocExpansion             string
 	DefaultModelsExpandDepth int
 	SwaggerBase              string
-	oauth2RedirectURL        template.JS
+	Oauth2RedirectURL        template.JS
 }
 
 // URL presents the url pointing to API definition (normally swagger.json or swagger.yaml).
@@ -69,14 +69,14 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 		DocExpansion:             "list",
 		DefaultModelsExpandDepth: 1,
 		SwaggerBase:              "/",
-		oauth2RedirectURL:        template.JS(""),
+		Oauth2RedirectURL:        template.JS(""),
 	}
 
 	for _, c := range confs {
 		c(defaultConfig)
 	}
 
-	defaultConfig.oauth2RedirectURL = template.JS(
+	defaultConfig.Oauth2RedirectURL = template.JS(
 		"`${window.location.href}" +
 			filepath.Join(defaultConfig.SwaggerBase, "oauth2-redirect.html") +
 			"`",
@@ -246,7 +246,7 @@ window.onload = function() {
     url: "{{.URL}}",
     dom_id: '#swagger-ui',
     validatorUrl: null,
-	oauth2RedirectUrl: {{.oauth2RedirectURL}},
+    oauth2RedirectUrl: {{.Oauth2RedirectURL}},
     presets: [
       SwaggerUIBundle.presets.apis,
       SwaggerUIStandalonePreset
