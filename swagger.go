@@ -14,6 +14,14 @@ import (
 	"github.com/swaggo/swag"
 )
 
+type swaggerConfig struct {
+	URL                      string
+	DeepLinking              bool
+	DocExpansion             string
+	DefaultModelsExpandDepth int
+	Oauth2RedirectURL        template.JS
+}
+
 // Config stores ginSwagger configuration variables.
 type Config struct {
 	//The url pointing to API definition (normally swagger.json or swagger.yaml). Default is `doc.json`.
@@ -22,6 +30,21 @@ type Config struct {
 	DocExpansion             string
 	DefaultModelsExpandDepth int
 	InstanceName             string
+}
+
+// Convert the config to a swagger one in order to fill unexposed template values.
+func (c Config) ToSwaggerConfig() swaggerConfig {
+	return swaggerConfig{
+		URL:                      c.URL,
+		DeepLinking:              c.DeepLinking,
+		DocExpansion:             c.DocExpansion,
+		DefaultModelsExpandDepth: c.DefaultModelsExpandDepth,
+		Oauth2RedirectURL: template.JS(
+			"`${window.location.protocol}//${window.location.host}$" +
+				"{window.location.pathname.split('/').slice(0, window.location.pathname.split('/').length - 1).join('/')}" +
+				"/oauth2-redirect.html`",
+		),
+	}
 }
 
 // URL presents the url pointing to API definition (normally swagger.json or swagger.yaml).
@@ -96,7 +119,7 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 		matches := rexp.FindStringSubmatch(c.Request.RequestURI)
 
 		if len(matches) != 3 {
-			c.Status(404)
+			c.Status(http.StatusNotFound)
 			_, _ = c.Writer.Write([]byte("404 page not found"))
 			return
 		}
@@ -113,13 +136,15 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 			c.Header("Content-Type", "text/css; charset=utf-8")
 		case ".js":
 			c.Header("Content-Type", "application/javascript")
+		case ".png":
+			c.Header("Content-Type", "image/png")
 		case ".json":
 			c.Header("Content-Type", "application/json; charset=utf-8")
 		}
 
 		switch path {
 		case "index.html":
-			_ = index.Execute(c.Writer, config)
+			_ = index.Execute(c.Writer, config.ToSwaggerConfig())
 		case "doc.json":
 			doc, err := swag.ReadDoc(config.InstanceName)
 			if err != nil {
@@ -142,7 +167,7 @@ func DisablingWrapHandler(h *webdav.Handler, envName string) gin.HandlerFunc {
 		return func(c *gin.Context) {
 			// Simulate behavior when route unspecified and
 			// return 404 HTTP code
-			c.String(404, "")
+			c.String(http.StatusNotFound, "")
 		}
 	}
 
@@ -157,7 +182,7 @@ func DisablingCustomWrapHandler(config *Config, h *webdav.Handler, envName strin
 		return func(c *gin.Context) {
 			// Simulate behavior when route unspecified and
 			// return 404 HTTP code
-			c.String(404, "")
+			c.String(http.StatusNotFound, "")
 		}
 	}
 
@@ -242,6 +267,7 @@ window.onload = function() {
     url: "{{.URL}}",
     dom_id: '#swagger-ui',
     validatorUrl: null,
+    oauth2RedirectUrl: {{.Oauth2RedirectURL}},
     presets: [
       SwaggerUIBundle.presets.apis,
       SwaggerUIStandalonePreset
