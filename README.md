@@ -8,12 +8,13 @@ gin middleware to automatically generate RESTFUL API documentation with Swagger 
 [![GoDoc](https://godoc.org/github.com/swaggo/gin-swagger?status.svg)](https://godoc.org/github.com/swaggo/gin-swagger)
 [![Release](https://img.shields.io/github/release/swaggo/gin-swagger.svg?style=flat-square)](https://github.com/swaggo/gin-swagger/releases)
 
-
 ## Usage
 
 ### Start using it
+
 1. Add comments to your API source code, [See Declarative Comments Format](https://swaggo.github.io/swaggo.io/declarative_comments_format/).
 2. Download [Swag](https://github.com/swaggo/swag) for Go by using:
+
 ```sh
 go get -u github.com/swaggo/swag/cmd/swag
 ```
@@ -21,14 +22,18 @@ go get -u github.com/swaggo/swag/cmd/swag
 3. Run the [Swag](https://github.com/swaggo/swag) at your Go project root path(for instance `~/root/go-peoject-name`),
    [Swag](https://github.com/swaggo/swag) will parse comments and generate required files(`docs` folder and `docs/doc.go`)
    at `~/root/go-peoject-name/docs`.
+
 ```sh
 swag init
 ```
+
 4. Download [gin-swagger](https://github.com/swaggo/gin-swagger) by using:
+
 ```sh
 go get -u github.com/swaggo/gin-swagger
 go get -u github.com/swaggo/files
 ```
+
 Import following in your code:
 
 ```go
@@ -38,17 +43,21 @@ import "github.com/swaggo/files" // swagger embed files
 ```
 
 ### Canonical example:
+
 Now assume you have implemented a simple api as following:
+
 ```go
-// A get function which returns a hello world string by json 
+// A get function which returns a hello world string by json
 func Helloworld(g *gin.Context)  {
 	g.JSON(http.StatusOK,"helloworld")
 }
 
 ```
+
 So how to use gin-swagger on api above? Just follow the following guide.
 
 1. Add Comments for apis and main function with gin-swagger rules like following:
+
 ```go
 // @BasePath /api/v1
 
@@ -69,14 +78,17 @@ func Helloworld(g *gin.Context)  {
 2. Use `swag init` command to generate a docs, docs generated will be stored at
 3. import the docs like this:
    I assume your project named `github.com/go-project-name/docs`.
+
 ```go
 import (
    docs "github.com/go-project-name/docs"
 )
 ```
+
 4. build your application and after that, go to http://localhost:8080/swagger/index.html ,you to see your Swagger UI.
 
 5. The full code and folder relatives here:
+
 ```go
 package main
 
@@ -117,7 +129,9 @@ func main()  {
 
 }
 ```
+
 Demo project tree, `swag init` is run at relative `.`
+
 ```
 .
 ├── docs
@@ -137,17 +151,17 @@ You can configure Swagger using different configuration options
 func main() {
 	r := gin.New()
 
-	ginSwagger.WrapHandler(swaggerFiles.Handler, 
-		ginSwagger.URL("http://localhost:8080/swagger/doc.json"), 
+	ginSwagger.WrapHandler(swaggerFiles.Handler,
+		ginSwagger.URL("http://localhost:8080/swagger/doc.json"),
 		ginSwagger.DefaultModelsExpandDepth(-1))
 
 	r.Run()
 }
 ```
 
-| Option                   | Type   | Default    | Description                                                               |
-|--------------------------|--------|------------|---------------------------------------------------------------------------|
-| URL                      | string | "doc.json" | URL pointing to API definition                                            |
+| Option                   | Type   | Default    | Description                                                                                                                                                                         |
+| ------------------------ | ------ | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| URL                      | string | "doc.json" | URL pointing to API definition                                                                                                                                                      |
 | DocExpantion             | string | "list"     | Controls the default expansion setting for the operations and tags. It can be 'list' (expands only the tags), 'full' (expands the tags and operations) or 'none' (expands nothing). |
-| DeepLinking              | bool   | true       | If set to true, enables deep linking for tags and operations. See the Deep Linking documentation for more information.|
-| DefaultModelsExpandDepth | int    | 1          | Default expansion depth for models (set to -1 completely hide the models) |
+| DeepLinking              | bool   | true       | If set to true, enables deep linking for tags and operations. See the Deep Linking documentation for more information.                                                              |
+| DefaultModelsExpandDepth | int    | 1          | Default expansion depth for models (set to -1 completely hide the models)                                                                                                           |

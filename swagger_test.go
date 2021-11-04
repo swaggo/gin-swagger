@@ -62,6 +62,7 @@ func TestWrapCustomHandler(t *testing.T) {
 
 	w6 := performRequest("GET", "/notfound", router)
 	assert.Equal(t, 404, w6.Code)
+
 }
 
 func TestDisablingWrapHandler(t *testing.T) {
@@ -94,11 +95,11 @@ func TestDisablingWrapHandler(t *testing.T) {
 	w22 := performRequest("GET", "/disabling/doc.json", router)
 	assert.Equal(t, 404, w22.Code)
 
-	w33 := performRequest("GET", "/disabling/favicon-16x16.png", router)
-	assert.Equal(t, 404, w33.Code)
-
-	w44 := performRequest("GET", "/disabling/notfound", router)
+	w44 := performRequest("GET", "/disabling/oauth2-redirect.html", router)
 	assert.Equal(t, 404, w44.Code)
+
+	w55 := performRequest("GET", "/disabling/notfound", router)
+	assert.Equal(t, 404, w55.Code)
 }
 
 func TestDisablingCustomWrapHandler(t *testing.T) {
