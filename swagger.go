@@ -21,6 +21,8 @@ type Config struct {
 	DeepLinking              bool
 	DocExpansion             string
 	DefaultModelsExpandDepth int
+	SwaggerBase              string
+	oauth2RedirectURL        template.JS
 }
 
 // URL presents the url pointing to API definition (normally swagger.json or swagger.yaml).
@@ -52,6 +54,13 @@ func DefaultModelsExpandDepth(depth int) func(c *Config) {
 	}
 }
 
+// SwaggerBase sets the subpath of swagger router. Default is `/`.
+func SwaggerBase(swaggerBase string) func(c *Config) {
+	return func(c *Config) {
+		c.SwaggerBase = swaggerBase
+	}
+}
+
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 	defaultConfig := &Config{
@@ -59,12 +68,19 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 		DeepLinking:              true,
 		DocExpansion:             "list",
 		DefaultModelsExpandDepth: 1,
+		SwaggerBase:              "/",
+		oauth2RedirectURL:        template.JS(""),
 	}
 
 	for _, c := range confs {
 		c(defaultConfig)
 	}
 
+	defaultConfig.oauth2RedirectURL = template.JS(
+		"`${window.location.href}" +
+			filepath.Join(defaultConfig.SwaggerBase, "oauth2-redirect.html") +
+			"`",
+	)
 	return CustomWrapHandler(defaultConfig, h)
 }
 
@@ -82,7 +98,7 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 		matches := rexp.FindStringSubmatch(c.Request.RequestURI)
 
 		if len(matches) != 3 {
-			c.Status(404)
+			c.Status(http.StatusNotFound)
 			_, _ = c.Writer.Write([]byte("404 page not found"))
 			return
 		}
@@ -124,17 +140,17 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 
 // DisablingWrapHandler turn handler off
 // if specified environment variable passed
-func DisablingWrapHandler(h *webdav.Handler, envName string) gin.HandlerFunc {
+func DisablingWrapHandler(h *webdav.Handler, envName string, confs ...func(c *Config)) gin.HandlerFunc {
 	eFlag := os.Getenv(envName)
 	if eFlag != "" {
 		return func(c *gin.Context) {
 			// Simulate behavior when route unspecified and
 			// return 404 HTTP code
-			c.String(404, "")
+			c.String(http.StatusNotFound, "")
 		}
 	}
 
-	return WrapHandler(h)
+	return WrapHandler(h, confs...)
 }
 
 // DisablingCustomWrapHandler turn handler off
@@ -145,7 +161,7 @@ func DisablingCustomWrapHandler(config *Config, h *webdav.Handler, envName strin
 		return func(c *gin.Context) {
 			// Simulate behavior when route unspecified and
 			// return 404 HTTP code
-			c.String(404, "")
+			c.String(http.StatusNotFound, "")
 		}
 	}
 
@@ -230,6 +246,7 @@ window.onload = function() {
     url: "{{.URL}}",
     dom_id: '#swagger-ui',
     validatorUrl: null,
+	oauth2RedirectUrl: {{.oauth2RedirectURL}},
     presets: [
       SwaggerUIBundle.presets.apis,
       SwaggerUIStandalonePreset
