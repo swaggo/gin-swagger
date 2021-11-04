@@ -14,6 +14,14 @@ import (
 	"github.com/swaggo/swag"
 )
 
+type swaggerConfig struct {
+	URL                      string
+	DeepLinking              bool
+	DocExpansion             string
+	DefaultModelsExpandDepth int
+	Oauth2RedirectURL        template.JS
+}
+
 // Config stores ginSwagger configuration variables.
 type Config struct {
 	//The url pointing to API definition (normally swagger.json or swagger.yaml). Default is `doc.json`.
@@ -21,8 +29,21 @@ type Config struct {
 	DeepLinking              bool
 	DocExpansion             string
 	DefaultModelsExpandDepth int
-	SwaggerBase              string
-	Oauth2RedirectURL        template.JS
+}
+
+// Convert the config to a swagger one in order to fill unexposed template values.
+func (c Config) ToSwaggerConfig() swaggerConfig {
+	return swaggerConfig{
+		URL:                      c.URL,
+		DeepLinking:              c.DeepLinking,
+		DocExpansion:             c.DocExpansion,
+		DefaultModelsExpandDepth: c.DefaultModelsExpandDepth,
+		Oauth2RedirectURL: template.JS(
+			"`${window.location.protocol}//${window.location.host}$" +
+				"{window.location.pathname.split('/').slice(0, window.location.pathname.split('/').length - 1).join('/')}" +
+				"/oauth2-redirect.html`",
+		),
+	}
 }
 
 // URL presents the url pointing to API definition (normally swagger.json or swagger.yaml).
@@ -54,13 +75,6 @@ func DefaultModelsExpandDepth(depth int) func(c *Config) {
 	}
 }
 
-// SwaggerBase sets the subpath of swagger router. Default is `/`.
-func SwaggerBase(swaggerBase string) func(c *Config) {
-	return func(c *Config) {
-		c.SwaggerBase = swaggerBase
-	}
-}
-
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 	defaultConfig := &Config{
@@ -68,19 +82,12 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 		DeepLinking:              true,
 		DocExpansion:             "list",
 		DefaultModelsExpandDepth: 1,
-		SwaggerBase:              "/",
-		Oauth2RedirectURL:        template.JS(""),
 	}
 
 	for _, c := range confs {
 		c(defaultConfig)
 	}
 
-	defaultConfig.Oauth2RedirectURL = template.JS(
-		"`${window.location.href}" +
-			filepath.Join(defaultConfig.SwaggerBase, "oauth2-redirect.html") +
-			"`",
-	)
 	return CustomWrapHandler(defaultConfig, h)
 }
 
@@ -123,7 +130,7 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 
 		switch path {
 		case "index.html":
-			_ = index.Execute(c.Writer, config)
+			_ = index.Execute(c.Writer, config.ToSwaggerConfig())
 		case "doc.json":
 			doc, err := swag.ReadDoc()
 			if err != nil {

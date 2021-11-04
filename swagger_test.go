@@ -65,28 +65,13 @@ func TestWrapCustomHandler(t *testing.T) {
 
 }
 
-func TestWrapCustomHandlerWithSwaggerBase(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	router := gin.New()
-
-	router.GET("/swagger/*any", CustomWrapHandler(&Config{SwaggerBase: "/swagger/"}, swaggerFiles.Handler))
-
-	w1 := performRequest("GET", "/swagger/index.html", router)
-	assert.Equal(t, 200, w1.Code)
-	assert.Equal(t, w1.Header()["Content-Type"][0], "text/html; charset=utf-8")
-
-	w2 := performRequest("GET", "/swagger/oauth2-redirect.html", router)
-	assert.Equal(t, 200, w2.Code)
-	assert.Equal(t, w2.Header()["Content-Type"][0], "text/html; charset=utf-8")
-}
-
 func TestDisablingWrapHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	router := gin.New()
 	disablingKey := "SWAGGER_DISABLE"
 
-	router.GET("/simple/*any", DisablingWrapHandler(swaggerFiles.Handler, disablingKey, SwaggerBase("/simple/")))
+	router.GET("/simple/*any", DisablingWrapHandler(swaggerFiles.Handler, disablingKey))
 
 	w1 := performRequest("GET", "/simple/index.html", router)
 	assert.Equal(t, 200, w1.Code)
@@ -102,7 +87,7 @@ func TestDisablingWrapHandler(t *testing.T) {
 
 	_ = os.Setenv(disablingKey, "true")
 
-	router.GET("/disabling/*any", DisablingWrapHandler(swaggerFiles.Handler, disablingKey, SwaggerBase("/disabling/")))
+	router.GET("/disabling/*any", DisablingWrapHandler(swaggerFiles.Handler, disablingKey))
 
 	w11 := performRequest("GET", "/disabling/index.html", router)
 	assert.Equal(t, 404, w11.Code)
@@ -123,14 +108,14 @@ func TestDisablingCustomWrapHandler(t *testing.T) {
 	router := gin.New()
 	disablingKey := "SWAGGER_DISABLE2"
 
-	router.GET("/simple/*any", DisablingCustomWrapHandler(&Config{SwaggerBase: "/simple/"}, swaggerFiles.Handler, disablingKey))
+	router.GET("/simple/*any", DisablingCustomWrapHandler(&Config{}, swaggerFiles.Handler, disablingKey))
 
 	w1 := performRequest("GET", "/simple/index.html", router)
 	assert.Equal(t, 200, w1.Code)
 
 	_ = os.Setenv(disablingKey, "true")
 
-	router.GET("/disabling/*any", DisablingCustomWrapHandler(&Config{SwaggerBase: "/disabling/"}, swaggerFiles.Handler, disablingKey))
+	router.GET("/disabling/*any", DisablingCustomWrapHandler(&Config{}, swaggerFiles.Handler, disablingKey))
 
 	w11 := performRequest("GET", "/disabling/index.html", router)
 	assert.Equal(t, 404, w11.Code)
@@ -224,17 +209,4 @@ func TestDefaultModelsExpandDepth(t *testing.T) {
 	configFunc = DefaultModelsExpandDepth(expected)
 	configFunc(&cfg)
 	assert.Equal(t, expected, cfg.DefaultModelsExpandDepth)
-}
-
-func TestSwaggerBase(t *testing.T) {
-	var cfg Config
-
-	configFunc := SwaggerBase("/swagger/")
-	configFunc(&cfg)
-	assert.Equal(t, "/swagger/", cfg.SwaggerBase)
-
-	configFunc = SwaggerBase("/")
-	configFunc(&cfg)
-	assert.Equal(t, "/", cfg.SwaggerBase)
-
 }
