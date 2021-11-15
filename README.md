@@ -75,7 +75,7 @@ func Helloworld(g *gin.Context)  {
 }
 ```
 
-2. Use `swag init` command to generate a docs, docs generated will be stored at
+2. Use `swag init` command to generate a docs, docs generated will be stored at `docs/`.
 3. import the docs like this:
    I assume your project named `github.com/go-project-name/docs`.
 
