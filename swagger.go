@@ -111,6 +111,9 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 	if config.InstanceName == "" {
 		config.InstanceName = swag.Name
 	}
+	if config.Title == "" {
+		config.Title = "Swagger UI"
+	}
 
 	// create a template with name
 	t := template.New("swagger_index.html")
