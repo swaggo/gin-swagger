@@ -95,6 +95,7 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 		DocExpansion:             "list",
 		DefaultModelsExpandDepth: 1,
 		InstanceName:             swag.Name,
+		Title:                    "Swagger UI",
 	}
 
 	for _, c := range confs {
