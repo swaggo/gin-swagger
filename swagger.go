@@ -20,6 +20,7 @@ type swaggerConfig struct {
 	DocExpansion             string
 	DefaultModelsExpandDepth int
 	Oauth2RedirectURL        template.JS
+	Title                    string
 }
 
 // Config stores ginSwagger configuration variables.
@@ -30,6 +31,7 @@ type Config struct {
 	DocExpansion             string
 	DefaultModelsExpandDepth int
 	InstanceName             string
+	Title                    string
 }
 
 // Convert the config to a swagger one in order to fill unexposed template values.
@@ -44,6 +46,7 @@ func (c Config) ToSwaggerConfig() swaggerConfig {
 				"{window.location.pathname.split('/').slice(0, window.location.pathname.split('/').length - 1).join('/')}" +
 				"/oauth2-redirect.html`",
 		),
+		Title: c.Title,
 	}
 }
 
@@ -92,6 +95,7 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 		DocExpansion:             "list",
 		DefaultModelsExpandDepth: 1,
 		InstanceName:             swag.Name,
+		Title:                    "Swagger UI",
 	}
 
 	for _, c := range confs {
@@ -107,6 +111,9 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 
 	if config.InstanceName == "" {
 		config.InstanceName = swag.Name
+	}
+	if config.Title == "" {
+		config.Title = "Swagger UI"
 	}
 
 	// create a template with name
@@ -194,7 +201,7 @@ const swagger_index_templ = `<!-- HTML for static distribution bundle build -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Swagger UI</title>
+  <title>{{.Title}}</title>
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="./swagger-ui.css" >
   <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
