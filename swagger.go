@@ -21,6 +21,7 @@ type swaggerConfig struct {
 	DefaultModelsExpandDepth int
 	Oauth2RedirectURL        template.JS
 	Title                    string
+	PersistAuthorization     bool
 }
 
 // Config stores ginSwagger configuration variables.
@@ -32,6 +33,7 @@ type Config struct {
 	DefaultModelsExpandDepth int
 	InstanceName             string
 	Title                    string
+	PersistAuthorization     bool
 }
 
 // Convert the config to a swagger one in order to fill unexposed template values.
@@ -46,7 +48,8 @@ func (c Config) ToSwaggerConfig() swaggerConfig {
 				"{window.location.pathname.split('/').slice(0, window.location.pathname.split('/').length - 1).join('/')}" +
 				"/oauth2-redirect.html`",
 		),
-		Title: c.Title,
+		Title:                c.Title,
+		PersistAuthorization: c.PersistAuthorization,
 	}
 }
 
@@ -84,6 +87,14 @@ func DefaultModelsExpandDepth(depth int) func(c *Config) {
 func InstanceName(name string) func(c *Config) {
 	return func(c *Config) {
 		c.InstanceName = name
+	}
+}
+
+// If set to true, it persists authorization data and it would not be lost on browser close/refresh
+// Defaults to false
+func PersistAuthorization(persistAuthorization bool) func(c *Config) {
+	return func(c *Config) {
+		c.PersistAuthorization = persistAuthorization
 	}
 }
 
@@ -275,6 +286,7 @@ window.onload = function() {
     dom_id: '#swagger-ui',
     validatorUrl: null,
     oauth2RedirectUrl: {{.Oauth2RedirectURL}},
+    persistAuthorization: {{.PersistAuthorization}},
     presets: [
       SwaggerUIBundle.presets.apis,
       SwaggerUIStandalonePreset
