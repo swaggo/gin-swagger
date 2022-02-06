@@ -107,7 +107,6 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 		DefaultModelsExpandDepth: 1,
 		InstanceName:             swag.Name,
 		Title:                    "Swagger UI",
-		PersistAuthorization:     false,
 	}
 
 	for _, c := range confs {
@@ -287,7 +286,7 @@ window.onload = function() {
     dom_id: '#swagger-ui',
     validatorUrl: null,
     oauth2RedirectUrl: {{.Oauth2RedirectURL}},
-	persistAuthorization: {{.PersistAuthorization}},
+    persistAuthorization: {{.PersistAuthorization}},
     presets: [
       SwaggerUIBundle.presets.apis,
       SwaggerUIStandalonePreset
