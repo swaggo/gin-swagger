@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"sync"
 
 	"golang.org/x/net/webdav"
 
@@ -118,7 +117,6 @@ func WrapHandler(h *webdav.Handler, confs ...func(c *Config)) gin.HandlerFunc {
 
 // CustomWrapHandler wraps `http.Handler` into `gin.HandlerFunc`
 func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc {
-	var once sync.Once
 
 	if config.InstanceName == "" {
 		config.InstanceName = swag.Name
@@ -143,9 +141,7 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 		}
 
 		path := matches[2]
-		once.Do(func() {
-			handler.Prefix = matches[1]
-		})
+		handler.Prefix = matches[1]
 
 		switch filepath.Ext(path) {
 		case ".html":
