@@ -73,7 +73,7 @@ const docTemplatev1 = `{
 // SwaggerInfov1 holds exported Swagger Info so clients can modify it
 var SwaggerInfov1 = &swag.Spec{
 	Version:          "1.0",
-	Host:             "example.swagger.io",
+	Host:             "",
 	BasePath:         "/v1",
 	Schemes:          []string{},
 	Title:            "Swagger Example API",

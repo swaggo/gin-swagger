@@ -15,7 +15,6 @@
         },
         "version": "1.0"
     },
-    "host": "example.swagger.io",
     "basePath": "/v1",
     "paths": {
         "/books": {
