@@ -143,6 +143,9 @@ Demo project tree, `swag init` is run at relative `.`
 └── main.go
 ```
 
+## Multiple APIs
+This feature where introduced in swag v1.7.9
+
 ## Configuration
 
 You can configure Swagger using different configuration options

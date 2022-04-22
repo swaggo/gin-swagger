@@ -36,36 +36,36 @@ type Config struct {
 	PersistAuthorization     bool
 }
 
-func (c Config) toSwaggerConfig() swaggerConfig {
+func (config Config) toSwaggerConfig() swaggerConfig {
 	return swaggerConfig{
-		URL:                      c.URL,
-		DeepLinking:              c.DeepLinking,
-		DocExpansion:             c.DocExpansion,
-		DefaultModelsExpandDepth: c.DefaultModelsExpandDepth,
+		URL:                      config.URL,
+		DeepLinking:              config.DeepLinking,
+		DocExpansion:             config.DocExpansion,
+		DefaultModelsExpandDepth: config.DefaultModelsExpandDepth,
 		Oauth2RedirectURL: "`${window.location.protocol}//${window.location.host}$" +
 			"{window.location.pathname.split('/').slice(0, window.location.pathname.split('/').length - 1).join('/')}" +
 			"/oauth2-redirect.html`",
-		Title:                c.Title,
-		PersistAuthorization: c.PersistAuthorization,
+		Title:                config.Title,
+		PersistAuthorization: config.PersistAuthorization,
 	}
 }
 
 // URL presents the url pointing to API definition (normally swagger.json or swagger.yaml).
-func URL(url string) func(c *Config) {
+func URL(url string) func(*Config) {
 	return func(c *Config) {
 		c.URL = url
 	}
 }
 
 // DocExpansion list, full, none.
-func DocExpansion(docExpansion string) func(c *Config) {
+func DocExpansion(docExpansion string) func(*Config) {
 	return func(c *Config) {
 		c.DocExpansion = docExpansion
 	}
 }
 
 // DeepLinking set the swagger deep linking configuration.
-func DeepLinking(deepLinking bool) func(c *Config) {
+func DeepLinking(deepLinking bool) func(*Config) {
 	return func(c *Config) {
 		c.DeepLinking = deepLinking
 	}
@@ -73,7 +73,7 @@ func DeepLinking(deepLinking bool) func(c *Config) {
 
 // DefaultModelsExpandDepth set the default expansion depth for models
 // (set to -1 completely hide the models).
-func DefaultModelsExpandDepth(depth int) func(c *Config) {
+func DefaultModelsExpandDepth(depth int) func(*Config) {
 	return func(c *Config) {
 		c.DefaultModelsExpandDepth = depth
 	}
@@ -81,39 +81,40 @@ func DefaultModelsExpandDepth(depth int) func(c *Config) {
 
 // InstanceName set the instance name that was used to generate the swagger documents
 // Defaults to swag.Name ("swagger").
-func InstanceName(name string) func(c *Config) {
+func InstanceName(name string) func(*Config) {
 	return func(c *Config) {
 		c.InstanceName = name
 	}
 }
 
-// PersistAuthorization If set to true, it persists authorization data and it would not be lost on browser close/refresh
+// PersistAuthorization Persist authorization information over browser close/refresh.
 // Defaults to false.
-func PersistAuthorization(persistAuthorization bool) func(c *Config) {
+func PersistAuthorization(persistAuthorization bool) func(*Config) {
 	return func(c *Config) {
 		c.PersistAuthorization = persistAuthorization
 	}
 }
 
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
-func WrapHandler(handler *webdav.Handler, options ...func(c *Config)) gin.HandlerFunc {
-	defaultConfig := Config{
+func WrapHandler(handler *webdav.Handler, options ...func(*Config)) gin.HandlerFunc {
+	var config = Config{
 		URL:                      "doc.json",
-		DeepLinking:              true,
 		DocExpansion:             "list",
-		DefaultModelsExpandDepth: 1,
 		InstanceName:             swag.Name,
 		Title:                    "Swagger UI",
+		DefaultModelsExpandDepth: 1,
+		DeepLinking:              true,
+		PersistAuthorization:     false,
 	}
 
 	for _, c := range options {
-		c(&defaultConfig)
+		c(&config)
 	}
 
-	return CustomWrapHandler(&defaultConfig, handler)
+	return CustomWrapHandler(&config, handler)
 }
 
-// CustomWrapHandler wraps `http.Handler` into `gin.HandlerFunc`
+// CustomWrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc {
 	var once sync.Once
 
@@ -126,10 +127,9 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 	}
 
 	// create a template with name
-	t := template.New("swagger_index.html")
-	index, _ := t.Parse(swagger_index_templ)
+	index, _ := template.New("swagger_index.html").Parse(swaggerIndexTpl)
 
-	var rexp = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[?|.]*`)
+	var matcher = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[?|.]*`)
 
 	return func(ctx *gin.Context) {
 		if ctx.Request.Method != http.MethodGet {
@@ -138,7 +138,7 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 			return
 		}
 
-		matches := rexp.FindStringSubmatch(ctx.Request.RequestURI)
+		matches := matcher.FindStringSubmatch(ctx.Request.RequestURI)
 
 		if len(matches) != 3 {
 			ctx.String(http.StatusNotFound, http.StatusText(http.StatusNotFound))
@@ -175,7 +175,7 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 				return
 			}
 
-			ctx.JSON(http.StatusOK, doc)
+			ctx.String(http.StatusOK, doc)
 		default:
 			handler.ServeHTTP(ctx.Writer, ctx.Request)
 		}
@@ -183,7 +183,7 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 }
 
 // DisablingWrapHandler turn handler off
-// if specified environment variable passed
+// if specified environment variable passed.
 func DisablingWrapHandler(handler *webdav.Handler, envName string) gin.HandlerFunc {
 	if os.Getenv(envName) != "" {
 		return func(c *gin.Context) {
@@ -197,8 +197,8 @@ func DisablingWrapHandler(handler *webdav.Handler, envName string) gin.HandlerFu
 }
 
 // DisablingCustomWrapHandler turn handler off
-// if specified environment variable passed
-func DisablingCustomWrapHandler(config *Config, h *webdav.Handler, envName string) gin.HandlerFunc {
+// if specified environment variable passed.
+func DisablingCustomWrapHandler(config *Config, handler *webdav.Handler, envName string) gin.HandlerFunc {
 	if os.Getenv(envName) != "" {
 		return func(c *gin.Context) {
 			// Simulate behavior when route unspecified and
@@ -207,10 +207,10 @@ func DisablingCustomWrapHandler(config *Config, h *webdav.Handler, envName strin
 		}
 	}
 
-	return CustomWrapHandler(config, h)
+	return CustomWrapHandler(config, handler)
 }
 
-const swagger_index_templ = `<!-- HTML for static distribution bundle build -->
+const swaggerIndexTpl = `<!-- HTML for static distribution bundle build -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
