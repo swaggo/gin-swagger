@@ -22,6 +22,7 @@ type swaggerConfig struct {
 	DefaultModelsExpandDepth int
 	DeepLinking              bool
 	PersistAuthorization     bool
+	Oauth2DefaultClientID    string
 }
 
 // Config stores ginSwagger configuration variables.
@@ -34,6 +35,7 @@ type Config struct {
 	DefaultModelsExpandDepth int
 	DeepLinking              bool
 	PersistAuthorization     bool
+	Oauth2DefaultClientID    string
 }
 
 func (config Config) toSwaggerConfig() swaggerConfig {
@@ -45,8 +47,9 @@ func (config Config) toSwaggerConfig() swaggerConfig {
 		Oauth2RedirectURL: "`${window.location.protocol}//${window.location.host}$" +
 			"{window.location.pathname.split('/').slice(0, window.location.pathname.split('/').length - 1).join('/')}" +
 			"/oauth2-redirect.html`",
-		Title:                config.Title,
-		PersistAuthorization: config.PersistAuthorization,
+		Title:                 config.Title,
+		PersistAuthorization:  config.PersistAuthorization,
+		Oauth2DefaultClientID: config.Oauth2DefaultClientID,
 	}
 }
 
@@ -95,6 +98,13 @@ func PersistAuthorization(persistAuthorization bool) func(*Config) {
 	}
 }
 
+// Oauth2DefaultClientID set the default client ID used for OAuth2
+func Oauth2DefaultClientID(oauth2DefaultClientID string) func(*Config) {
+	return func(c *Config) {
+		c.Oauth2DefaultClientID = oauth2DefaultClientID
+	}
+}
+
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(handler *webdav.Handler, options ...func(*Config)) gin.HandlerFunc {
 	var config = Config{
@@ -105,6 +115,7 @@ func WrapHandler(handler *webdav.Handler, options ...func(*Config)) gin.HandlerF
 		DefaultModelsExpandDepth: 1,
 		DeepLinking:              true,
 		PersistAuthorization:     false,
+		Oauth2DefaultClientID:    "",
 	}
 
 	for _, c := range options {
@@ -302,6 +313,13 @@ window.onload = function() {
 	deepLinking: {{.DeepLinking}},
 	defaultModelsExpandDepth: {{.DefaultModelsExpandDepth}}
   })
+
+  const defaultClientId = "{{.Oauth2DefaultClientID}}";
+  if (defaultClientId) {
+    ui.initOAuth({
+      clientId: defaultClientId
+    })
+  }
 
   window.ui = ui
 }
