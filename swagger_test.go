@@ -233,3 +233,16 @@ func TestPersistAuthorization(t *testing.T) {
 	configFunc(&cfg)
 	assert.Equal(t, false, cfg.PersistAuthorization)
 }
+
+func TestOauth2DefaultClientID(t *testing.T) {
+	var cfg Config
+	assert.Equal(t, "", cfg.Oauth2DefaultClientID)
+
+	configFunc := Oauth2DefaultClientID("default_client_id")
+	configFunc(&cfg)
+	assert.Equal(t, "default_client_id", cfg.Oauth2DefaultClientID)
+
+	configFunc = Oauth2DefaultClientID("")
+	configFunc(&cfg)
+	assert.Equal(t, "", cfg.Oauth2DefaultClientID)
+}
