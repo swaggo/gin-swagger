@@ -1,6 +1,6 @@
 # gin-swagger
 
-gin middleware to automatically generate RESTFUL API documentation with Swagger 2.0.
+gin middleware to automatically generate RESTful API documentation with Swagger 2.0.
 
 [![Build Status](https://github.com/swaggo/gin-swagger/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/features/actions)
 [![Codecov branch](https://img.shields.io/codecov/c/github/swaggo/gin-swagger/master.svg)](https://codecov.io/gh/swaggo/gin-swagger)
@@ -17,6 +17,12 @@ gin middleware to automatically generate RESTFUL API documentation with Swagger 
 
 ```sh
 go get -u github.com/swaggo/swag/cmd/swag
+```
+
+Starting in Go 1.17, installing executables with `go get` is deprecated. `go install` may be used instead:
+
+```sh
+go install github.com/swaggo/swag/cmd/swag
 ```
 
 3. Run the [Swag](https://github.com/swaggo/swag) at your Go project root path(for instance `~/root/go-peoject-name`),
