@@ -150,7 +150,7 @@ Demo project tree, `swag init` is run at relative `.`
 ```
 
 ## Multiple APIs
-This feature where introduced in swag v1.7.9
+This feature was introduced in swag v1.7.9
 
 ## Configuration
 
