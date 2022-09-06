@@ -15,11 +15,11 @@ func main() {
 
 	// Register api/v1 endpoints
 	v1.Register(router)
-	router.GET("/swagger/v1/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.InstanceName("v1")))
+	router.GET("/swagger/v1/*any", ginSwagger.WrapHandler(swaggerFiles.NewHandler(), ginSwagger.InstanceName("v1")))
 
 	// Register api/v2 endpoints
 	v2.Register(router)
-	router.GET("/swagger/v2/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.InstanceName("v2")))
+	router.GET("/swagger/v2/*any", ginSwagger.WrapHandler(swaggerFiles.NewHandler(), ginSwagger.InstanceName("v2")))
 
 	// Listen and Server in
 	_ = router.Run()
