@@ -26,7 +26,7 @@ func GetStringByInt(c *gin.Context) {
 // @Produce  json
 // @Param   some_id     path    string     true        "Some ID"
 // @Param   offset     query    int     true        "Offset"
-// @Param   limit      query    int     true        "Offset"
+// @Param   limit      query    int     true        "Limit"
 // @Success 200 {string} string	"ok"
 // @Failure 400 {object} web.APIError "We need ID!!"
 // @Failure 404 {object} web.APIError "Can not find ID"
