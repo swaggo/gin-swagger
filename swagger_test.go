@@ -80,6 +80,9 @@ func TestDisablingWrapHandler(t *testing.T) {
 	router := gin.New()
 	disablingKey := "SWAGGER_DISABLE"
 
+	doc := &mockedSwag{}
+	swag.Register(swag.Name, doc)
+
 	router.GET("/simple/*any", DisablingWrapHandler(swaggerFiles.Handler, disablingKey))
 
 	assert.Equal(t, http.StatusOK, performRequest(http.MethodGet, "/simple/index.html", router).Code)
