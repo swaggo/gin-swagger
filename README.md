@@ -161,7 +161,7 @@ You can configure Swagger using different configuration options
 func main() {
 	r := gin.New()
 
-	ginSwagger.WrapHandler(swaggerFiles.Handler,
+	ginSwagger.WrapHandler(swaggerfiles.Handler,
 		ginSwagger.URL("http://localhost:8080/swagger/doc.json"),
 		ginSwagger.DefaultModelsExpandDepth(-1))
 
