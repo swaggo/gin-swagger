@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"sync"
 	"testing"
 
 	"github.com/gin-contrib/gzip"
@@ -22,6 +23,17 @@ func (s *mockedSwag) ReadDoc() string {
 }`
 }
 
+var (
+	once sync.Once
+	doc  = &mockedSwag{}
+)
+
+func regDoc() {
+	once.Do(func() {
+		swag.Register(swag.Name, doc)
+	})
+}
+
 func TestWrapHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
@@ -32,6 +44,8 @@ func TestWrapHandler(t *testing.T) {
 }
 
 func TestWrapCustomHandler(t *testing.T) {
+	regDoc()
+	
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 
@@ -41,10 +55,7 @@ func TestWrapCustomHandler(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w1.Code)
 	assert.Equal(t, w1.Header()["Content-Type"][0], "text/html; charset=utf-8")
 
-	assert.Equal(t, http.StatusInternalServerError, performRequest(http.MethodGet, "/doc.json", router).Code)
-
-	doc := &mockedSwag{}
-	swag.Register(swag.Name, doc)
+	assert.Equal(t, http.StatusOK, performRequest(http.MethodGet, "/doc.json", router).Code)
 
 	w2 := performRequest(http.MethodGet, "/doc.json", router)
 	assert.Equal(t, http.StatusOK, w2.Code)
@@ -75,6 +86,8 @@ func TestWrapCustomHandler(t *testing.T) {
 }
 
 func TestDisablingWrapHandler(t *testing.T) {
+	regDoc()
+
 	gin.SetMode(gin.TestMode)
 
 	router := gin.New()
@@ -116,6 +129,8 @@ func TestDisablingCustomWrapHandler(t *testing.T) {
 }
 
 func TestWithGzipMiddleware(t *testing.T) {
+	regDoc()
+
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 
