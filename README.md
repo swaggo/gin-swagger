@@ -16,7 +16,7 @@ gin middleware to automatically generate RESTful API documentation with Swagger 
 2. Download [Swag](https://github.com/swaggo/swag) for Go by using:
 
 ```sh
-go get -u github.com/swaggo/swag/cmd/swag
+go get -u github.com/swaggo/swag/v2
 ```
 
 Starting in Go 1.17, installing executables with `go get` is deprecated. `go install` may be used instead:
