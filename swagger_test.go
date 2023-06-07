@@ -246,3 +246,16 @@ func TestOauth2DefaultClientID(t *testing.T) {
 	configFunc(&cfg)
 	assert.Equal(t, "", cfg.Oauth2DefaultClientID)
 }
+
+func TestUsePkceWithAuthorizationCodeGrant(t *testing.T) {
+	var cfg Config
+	assert.Equal(t, false, cfg.UsePkceWithAuthorizationCodeGrant)
+
+	configFunc := UsePkceWithAuthorizationCodeGrant(true)
+	configFunc(&cfg)
+	assert.Equal(t, true, cfg.UsePkceWithAuthorizationCodeGrant)
+
+	configFunc = UsePkceWithAuthorizationCodeGrant(false)
+	configFunc(&cfg)
+	assert.Equal(t, false, cfg.UsePkceWithAuthorizationCodeGrant)
+}
