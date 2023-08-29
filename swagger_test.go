@@ -205,6 +205,22 @@ func TestDefaultModelsExpandDepth(t *testing.T) {
 	assert.Equal(t, expected, cfg.DefaultModelsExpandDepth)
 }
 
+func TestDefaultModelExpandDepth(t *testing.T) {
+	var cfg Config
+
+	assert.Equal(t, 0, cfg.DefaultModelExpandDepth)
+
+	expected := -1
+	configFunc := DefaultModelExpandDepth(expected)
+	configFunc(&cfg)
+	assert.Equal(t, expected, cfg.DefaultModelExpandDepth)
+
+	expected = 1
+	configFunc = DefaultModelExpandDepth(expected)
+	configFunc(&cfg)
+	assert.Equal(t, expected, cfg.DefaultModelExpandDepth)
+}
+
 func TestInstanceName(t *testing.T) {
 	var cfg Config
 
