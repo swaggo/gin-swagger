@@ -1,7 +1,6 @@
 package ginSwagger
 
 import (
-	"html/template"
 	htmlTemplate "html/template"
 	"net/http"
 	"os"
@@ -20,7 +19,7 @@ type swaggerConfig struct {
 	URL                      string
 	DocExpansion             string
 	Title                    string
-	Oauth2RedirectURL        template.JS
+	Oauth2RedirectURL        htmlTemplate.JS
 	DefaultModelsExpandDepth int
 	DeepLinking              bool
 	PersistAuthorization     bool
