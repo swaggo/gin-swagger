@@ -67,6 +67,14 @@ func TestWrapCustomHandler(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w5.Code)
 	assert.Equal(t, w5.Header()["Content-Type"][0], "application/javascript")
 
+	w6 := performRequest(http.MethodGet, "/index.css", router)
+	assert.Equal(t, http.StatusOK, w6.Code)
+	assert.Equal(t, w6.Header()["Content-Type"][0], "text/css; charset=utf-8")
+
+	w7 := performRequest(http.MethodGet, "/swagger-initializer.js", router)
+	assert.Equal(t, http.StatusOK, w7.Code)
+	assert.Equal(t, w7.Header()["Content-Type"][0], "application/javascript")
+
 	assert.Equal(t, http.StatusNotFound, performRequest(http.MethodGet, "/notfound", router).Code)
 
 	assert.Equal(t, http.StatusMethodNotAllowed, performRequest(http.MethodPost, "/index.html", router).Code)
