@@ -1,4 +1,3 @@
-
 # gin-swagger
 
 gin middleware to automatically generate RESTful API documentation with Swagger 2.0.
@@ -20,50 +19,43 @@ gin middleware to automatically generate RESTful API documentation with Swagger 
 ```sh
 go get -u github.com/swaggo/swag/cmd/swag
 ```
----
+
 
 Starting in Go 1.17, installing executables with `go get` is deprecated. `go install` may be used instead:
 
----
+
 ```sh
 go install github.com/swaggo/swag/cmd/swag@latest
 ```
----
+
 
 3. Run the [Swag](https://github.com/swaggo/swag) at your Go project root path(for instance `~/root/go-project-name`),
    [Swag](https://github.com/swaggo/swag) will parse comments and generate required files(`docs` folder and `docs/doc.go`)
    at `~/root/go-project-name/docs`.
 
----
 ```sh
 swag init
 ```
----
 
 4. Download [gin-swagger](https://github.com/swaggo/gin-swagger) by using:
 
----
 ```sh
 go get -u github.com/swaggo/gin-swagger
 go get -u github.com/swaggo/files
 ```
----
 
 Import following in your code:
 
----
 ```go
 import "github.com/swaggo/gin-swagger" // gin-swagger middleware
 import "github.com/swaggo/files" // swagger embed files
 
 ```
----
 
 ### Canonical example:
 
 Now assume you have implemented a simple api as following:
 
----
 ```go
 // A get function which returns a hello world string by json
 func Helloworld(g *gin.Context)  {
@@ -71,13 +63,11 @@ func Helloworld(g *gin.Context)  {
 }
 
 ```
----
 
 So how to use gin-swagger on api above? Just follow the following guide.
 
 1. Add Comments for apis and main function with gin-swagger rules like following:
 
----
 ```go
 // @BasePath /api/v1
 
@@ -94,25 +84,21 @@ func Helloworld(g *gin.Context)  {
 	g.JSON(http.StatusOK,"helloworld")
 }
 ```
----
 
 2. Use `swag init` command to generate a docs, docs generated will be stored at `docs/`.
 3. import the docs like this:
    I assume your project named `github.com/go-project-name/docs`.
 
----
 ```go
 import (
    docs "github.com/go-project-name/docs"
 )
 ```
----
 
 4. build your application and after that, go to http://localhost:8080/swagger/index.html ,you to see your Swagger UI.
 
 5. The full code and folder relatives here:
 
----
 ```go
 package main
 
@@ -153,11 +139,9 @@ func main()  {
 
 }
 ```
----
 
 Demo project tree, `swag init` is run at relative `.`
 
----
 ```
 .
 ├── docs
@@ -168,7 +152,6 @@ Demo project tree, `swag init` is run at relative `.`
 ├── go.sum
 └── main.go
 ```
----
 
 ## Multiple APIs
 
@@ -178,7 +161,6 @@ This feature was introduced in swag v1.7.9
 
 You can configure Swagger using different configuration options
 
----
 ```go
 func main() {
 	r := gin.New()
@@ -190,7 +172,6 @@ func main() {
 	r.Run()
 }
 ```
----
 
 | Option                   | Type   | Default    | Description                                                                                                                                                                                                                                               |
 | ------------------------ | ------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
