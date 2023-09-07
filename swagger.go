@@ -1,12 +1,13 @@
 package ginSwagger
 
 import (
-	"html/template"
+	htmlTemplate "html/template"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sync"
+	textTemplate "text/template"
 
 	"golang.org/x/net/webdav"
 
@@ -18,7 +19,7 @@ type swaggerConfig struct {
 	URL                      string
 	DocExpansion             string
 	Title                    string
-	Oauth2RedirectURL        template.JS
+	Oauth2RedirectURL        htmlTemplate.JS
 	DefaultModelsExpandDepth int
 	DeepLinking              bool
 	PersistAuthorization     bool
@@ -138,9 +139,11 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 	}
 
 	// create a template with name
-	index, _ := template.New("swagger_index.html").Parse(swaggerIndexTpl)
+	index, _ := htmlTemplate.New("swagger_index.html").Parse(swaggerIndexTpl)
+	js, _ := textTemplate.New("swagger_index.js").Parse(swaggerJSTpl)
+	css, _ := textTemplate.New("swagger_index.css").Parse(swaggerStyleTpl)
 
-	var matcher = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[?|.]*`)
+	var matcher = regexp.MustCompile(`(.*)(index\.html|index\.css|swagger-initializer\.js|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[?|.]*`)
 
 	return func(ctx *gin.Context) {
 		if ctx.Request.Method != http.MethodGet {
@@ -178,6 +181,10 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 		switch path {
 		case "index.html":
 			_ = index.Execute(ctx.Writer, config.toSwaggerConfig())
+		case "index.css":
+			_ = css.Execute(ctx.Writer, config.toSwaggerConfig())
+		case "swagger-initializer.js":
+			_ = js.Execute(ctx.Writer, config.toSwaggerConfig())
 		case "doc.json":
 			doc, err := swag.ReadDoc(config.InstanceName)
 			if err != nil {
@@ -221,6 +228,59 @@ func DisablingCustomWrapHandler(config *Config, handler *webdav.Handler, envName
 	return CustomWrapHandler(config, handler)
 }
 
+const swaggerStyleTpl = `
+html
+{
+    box-sizing: border-box;
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+}
+*,
+*:before,
+*:after
+{
+    box-sizing: inherit;
+}
+
+body {
+  margin:0;
+  background: #fafafa;
+}
+`
+
+const swaggerJSTpl = `
+window.onload = function() {
+  // Build a system
+  const ui = SwaggerUIBundle({
+    url: "{{.URL}}",
+    dom_id: '#swagger-ui',
+    validatorUrl: null,
+    oauth2RedirectUrl: {{.Oauth2RedirectURL}},
+    persistAuthorization: {{.PersistAuthorization}},
+    presets: [
+      SwaggerUIBundle.presets.apis,
+      SwaggerUIStandalonePreset
+    ],
+    plugins: [
+      SwaggerUIBundle.plugins.DownloadUrl
+    ],
+	layout: "StandaloneLayout",
+    docExpansion: "{{.DocExpansion}}",
+	deepLinking: {{.DeepLinking}},
+	defaultModelsExpandDepth: {{.DefaultModelsExpandDepth}}
+  })
+
+  const defaultClientId = "{{.Oauth2DefaultClientID}}";
+  if (defaultClientId) {
+    ui.initOAuth({
+      clientId: defaultClientId
+    })
+  }
+
+  window.ui = ui
+}
+`
+
 const swaggerIndexTpl = `<!-- HTML for static distribution bundle build -->
 <!DOCTYPE html>
 <html lang="en">
@@ -230,25 +290,7 @@ const swaggerIndexTpl = `<!-- HTML for static distribution bundle build -->
   <link rel="stylesheet" type="text/css" href="./swagger-ui.css" >
   <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
-  <style>
-    html
-    {
-        box-sizing: border-box;
-        overflow: -moz-scrollbars-vertical;
-        overflow-y: scroll;
-    }
-    *,
-    *:before,
-    *:after
-    {
-        box-sizing: inherit;
-    }
-
-    body {
-      margin:0;
-      background: #fafafa;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="index.css" />
 </head>
 
 <body>
@@ -291,38 +333,7 @@ const swaggerIndexTpl = `<!-- HTML for static distribution bundle build -->
 
 <script src="./swagger-ui-bundle.js"> </script>
 <script src="./swagger-ui-standalone-preset.js"> </script>
-<script>
-window.onload = function() {
-  // Build a system
-  const ui = SwaggerUIBundle({
-    url: "{{.URL}}",
-    dom_id: '#swagger-ui',
-    validatorUrl: null,
-    oauth2RedirectUrl: {{.Oauth2RedirectURL}},
-    persistAuthorization: {{.PersistAuthorization}},
-    presets: [
-      SwaggerUIBundle.presets.apis,
-      SwaggerUIStandalonePreset
-    ],
-    plugins: [
-      SwaggerUIBundle.plugins.DownloadUrl
-    ],
-	layout: "StandaloneLayout",
-    docExpansion: "{{.DocExpansion}}",
-	deepLinking: {{.DeepLinking}},
-	defaultModelsExpandDepth: {{.DefaultModelsExpandDepth}}
-  })
-
-  const defaultClientId = "{{.Oauth2DefaultClientID}}";
-  if (defaultClientId) {
-    ui.initOAuth({
-      clientId: defaultClientId
-    })
-  }
-
-  window.ui = ui
-}
-</script>
+<script src="./swagger-initializer.js"> </script>
 </body>
 
 </html>
