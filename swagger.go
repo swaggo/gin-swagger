@@ -1,6 +1,7 @@
 package ginSwagger
 
 import (
+	"fmt"
 	htmlTemplate "html/template"
 	"net/http"
 	"os"
@@ -24,6 +25,7 @@ type swaggerConfig struct {
 	DeepLinking              bool
 	PersistAuthorization     bool
 	Oauth2DefaultClientID    string
+	OperationsSorter         string
 }
 
 // Config stores ginSwagger configuration variables.
@@ -37,6 +39,7 @@ type Config struct {
 	DeepLinking              bool
 	PersistAuthorization     bool
 	Oauth2DefaultClientID    string
+	OperationsSorter         string
 }
 
 func (config Config) toSwaggerConfig() swaggerConfig {
@@ -51,6 +54,7 @@ func (config Config) toSwaggerConfig() swaggerConfig {
 		Title:                 config.Title,
 		PersistAuthorization:  config.PersistAuthorization,
 		Oauth2DefaultClientID: config.Oauth2DefaultClientID,
+		OperationsSorter:      config.OperationsSorter,
 	}
 }
 
@@ -72,6 +76,18 @@ func DocExpansion(docExpansion string) func(*Config) {
 func DeepLinking(deepLinking bool) func(*Config) {
 	return func(c *Config) {
 		c.DeepLinking = deepLinking
+	}
+}
+
+// OperationsSorter sets the swagger operationsSorter configuration. Either "alpha", "method" or Function=(a => a)
+// default is "alpha" (alphabetically sorted).
+func OperationsSorter(operationsSorter string) func(*Config) {
+	return func(c *Config) {
+		if operationsSorter == "alpha" || operationsSorter == "method" {
+			c.OperationsSorter = fmt.Sprintf(`"%s"`, operationsSorter)
+			return
+		}
+		c.OperationsSorter = operationsSorter
 	}
 }
 
@@ -117,6 +133,7 @@ func WrapHandler(handler *webdav.Handler, options ...func(*Config)) gin.HandlerF
 		DeepLinking:              true,
 		PersistAuthorization:     false,
 		Oauth2DefaultClientID:    "",
+		OperationsSorter:         `"alpha"`,
 	}
 
 	for _, c := range options {
@@ -136,6 +153,15 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 
 	if config.Title == "" {
 		config.Title = "Swagger UI"
+	}
+
+	if config.OperationsSorter == "" {
+		config.OperationsSorter = `"alpha"`
+	}
+
+	//wraps the operationsSorter string options in quotes to both support "alpha", "method" and custom functions
+	if config.OperationsSorter == "alpha" || config.OperationsSorter == "method" {
+		config.OperationsSorter = fmt.Sprintf(`"%s"`, config.OperationsSorter)
 	}
 
 	// create a template with name
@@ -257,6 +283,7 @@ window.onload = function() {
     validatorUrl: null,
     oauth2RedirectUrl: {{.Oauth2RedirectURL}},
     persistAuthorization: {{.PersistAuthorization}},
+	operationsSorter: {{.OperationsSorter}},
     presets: [
       SwaggerUIBundle.presets.apis,
       SwaggerUIStandalonePreset

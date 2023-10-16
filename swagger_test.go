@@ -254,3 +254,20 @@ func TestOauth2DefaultClientID(t *testing.T) {
 	configFunc(&cfg)
 	assert.Equal(t, "", cfg.Oauth2DefaultClientID)
 }
+
+func TestOperationSorter(t *testing.T) {
+	var cfg Config
+	assert.Equal(t, "", cfg.OperationsSorter)
+
+	configFunc := OperationsSorter("method")
+	configFunc(&cfg)
+	assert.Equal(t, `"method"`, cfg.OperationsSorter)
+
+	configFunc = OperationsSorter(`alpha`)
+	configFunc(&cfg)
+	assert.Equal(t, `"alpha"`, cfg.OperationsSorter)
+
+	configFunc = OperationsSorter("")
+	configFunc(&cfg)
+	assert.Equal(t, "", cfg.OperationsSorter)
+}
