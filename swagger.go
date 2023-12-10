@@ -1,6 +1,7 @@
 package ginSwagger
 
 import (
+	"fmt"
 	htmlTemplate "html/template"
 	"net/http"
 	"os"
@@ -24,6 +25,7 @@ type swaggerConfig struct {
 	DeepLinking              bool
 	PersistAuthorization     bool
 	Oauth2DefaultClientID    string
+	SupportedSubmitMethods   string
 }
 
 // Config stores ginSwagger configuration variables.
@@ -37,9 +39,24 @@ type Config struct {
 	DeepLinking              bool
 	PersistAuthorization     bool
 	Oauth2DefaultClientID    string
+	SupportedSubmitMethods   []string
+}
+
+// supportedMethodsToJSArray converts a list of string to valid javascript array as a go string
+func supportedMethodsToJSArray(supportedMethods []string) string {
+	jsStr := "["
+	for i, mtd := range supportedMethods {
+		sep := ","
+		if i == 0 || i+1 > len(supportedMethods) {
+			sep = ""
+		}
+		jsStr = fmt.Sprintf("%s%s \"%s\"", jsStr, sep, mtd)
+	}
+	return fmt.Sprintf("%s]", jsStr)
 }
 
 func (config Config) toSwaggerConfig() swaggerConfig {
+
 	return swaggerConfig{
 		URL:                      config.URL,
 		DeepLinking:              config.DeepLinking,
@@ -48,9 +65,10 @@ func (config Config) toSwaggerConfig() swaggerConfig {
 		Oauth2RedirectURL: "`${window.location.protocol}//${window.location.host}$" +
 			"{window.location.pathname.split('/').slice(0, window.location.pathname.split('/').length - 1).join('/')}" +
 			"/oauth2-redirect.html`",
-		Title:                 config.Title,
-		PersistAuthorization:  config.PersistAuthorization,
-		Oauth2DefaultClientID: config.Oauth2DefaultClientID,
+		Title:                  config.Title,
+		PersistAuthorization:   config.PersistAuthorization,
+		Oauth2DefaultClientID:  config.Oauth2DefaultClientID,
+		SupportedSubmitMethods: supportedMethodsToJSArray(config.SupportedSubmitMethods),
 	}
 }
 
@@ -106,6 +124,14 @@ func Oauth2DefaultClientID(oauth2DefaultClientID string) func(*Config) {
 	}
 }
 
+// SupportedSubmitMethods set the supported methods that Try It Out could be enabled for.
+// The slice can contain any or all of ["get", "put", "post", "delete", "options", "head", "patch", "trace"],
+func SupportedSubmitMethods(supportedSubmitMethods []string) func(*Config) {
+	return func(c *Config) {
+		c.SupportedSubmitMethods = supportedSubmitMethods
+	}
+}
+
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(handler *webdav.Handler, options ...func(*Config)) gin.HandlerFunc {
 	var config = Config{
@@ -117,6 +143,9 @@ func WrapHandler(handler *webdav.Handler, options ...func(*Config)) gin.HandlerF
 		DeepLinking:              true,
 		PersistAuthorization:     false,
 		Oauth2DefaultClientID:    "",
+		SupportedSubmitMethods: []string{
+			"get", "put", "post", "delete", "options", "head", "patch", "trace",
+		},
 	}
 
 	for _, c := range options {
@@ -255,6 +284,7 @@ window.onload = function() {
     url: "{{.URL}}",
     dom_id: '#swagger-ui',
     validatorUrl: null,
+	supportedSubmitMethods: {{.SupportedSubmitMethods}},
     oauth2RedirectUrl: {{.Oauth2RedirectURL}},
     persistAuthorization: {{.PersistAuthorization}},
     presets: [

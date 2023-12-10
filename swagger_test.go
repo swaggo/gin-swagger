@@ -254,3 +254,16 @@ func TestOauth2DefaultClientID(t *testing.T) {
 	configFunc(&cfg)
 	assert.Equal(t, "", cfg.Oauth2DefaultClientID)
 }
+
+func TestSupportedSubmitMethods(t *testing.T) {
+	var cfg Config
+	assert.Equal(t, 0, len(cfg.SupportedSubmitMethods))
+
+	configFunc := SupportedSubmitMethods([]string{"get"})
+	configFunc(&cfg)
+	assert.Equal(t, []string{"get"}, cfg.SupportedSubmitMethods)
+
+	configFunc = SupportedSubmitMethods([]string{})
+	configFunc(&cfg)
+	assert.Equal(t, []string{}, cfg.SupportedSubmitMethods)
+}
