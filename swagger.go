@@ -24,6 +24,7 @@ type swaggerConfig struct {
 	DeepLinking              bool
 	PersistAuthorization     bool
 	Oauth2DefaultClientID    string
+	ShowCommonExtensions     bool
 }
 
 // Config stores ginSwagger configuration variables.
@@ -37,6 +38,7 @@ type Config struct {
 	DeepLinking              bool
 	PersistAuthorization     bool
 	Oauth2DefaultClientID    string
+	ShowCommonExtensions     bool
 }
 
 func (config Config) toSwaggerConfig() swaggerConfig {
@@ -51,6 +53,7 @@ func (config Config) toSwaggerConfig() swaggerConfig {
 		Title:                 config.Title,
 		PersistAuthorization:  config.PersistAuthorization,
 		Oauth2DefaultClientID: config.Oauth2DefaultClientID,
+		ShowCommonExtensions:  config.ShowCommonExtensions,
 	}
 }
 
@@ -106,6 +109,13 @@ func Oauth2DefaultClientID(oauth2DefaultClientID string) func(*Config) {
 	}
 }
 
+// ShowCommonExtensions set the swagger show common extensions configuration.
+func ShowCommonExtensions(showCommonExtensions bool) func(*Config) {
+	return func(c *Config) {
+		c.ShowCommonExtensions = showCommonExtensions
+	}
+}
+
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(handler *webdav.Handler, options ...func(*Config)) gin.HandlerFunc {
 	var config = Config{
@@ -117,6 +127,7 @@ func WrapHandler(handler *webdav.Handler, options ...func(*Config)) gin.HandlerF
 		DeepLinking:              true,
 		PersistAuthorization:     false,
 		Oauth2DefaultClientID:    "",
+		ShowCommonExtensions:     false,
 	}
 
 	for _, c := range options {
@@ -267,7 +278,8 @@ window.onload = function() {
 	layout: "StandaloneLayout",
     docExpansion: "{{.DocExpansion}}",
 	deepLinking: {{.DeepLinking}},
-	defaultModelsExpandDepth: {{.DefaultModelsExpandDepth}}
+	defaultModelsExpandDepth: {{.DefaultModelsExpandDepth}},
+	showCommonExtensions: {{.ShowCommonExtensions}}
   })
 
   const defaultClientId = "{{.Oauth2DefaultClientID}}";
