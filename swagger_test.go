@@ -254,3 +254,17 @@ func TestOauth2DefaultClientID(t *testing.T) {
 	configFunc(&cfg)
 	assert.Equal(t, "", cfg.Oauth2DefaultClientID)
 }
+
+func TestShowCommonExtensions(t *testing.T) {
+	var cfg Config
+	assert.Equal(t, false, cfg.ShowCommonExtensions)
+
+	configFunc := ShowCommonExtensions(true)
+	configFunc(&cfg)
+	assert.Equal(t, true, cfg.ShowCommonExtensions)
+
+	configFunc = ShowCommonExtensions(false)
+	configFunc(&cfg)
+	assert.Equal(t, false, cfg.ShowCommonExtensions)
+
+}
