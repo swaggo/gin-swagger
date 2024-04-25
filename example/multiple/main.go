@@ -1,12 +1,12 @@
 package main
 
 import (
+	ginSwagger "github.com/adiatma85/custom-gin-swagger"
+	v1 "github.com/adiatma85/custom-gin-swagger/example/multiple/api/v1"
+	v2 "github.com/adiatma85/custom-gin-swagger/example/multiple/api/v2"
+	_ "github.com/adiatma85/custom-gin-swagger/example/multiple/docs"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	v1 "github.com/swaggo/gin-swagger/example/multiple/api/v1"
-	v2 "github.com/swaggo/gin-swagger/example/multiple/api/v2"
-	_ "github.com/swaggo/gin-swagger/example/multiple/docs"
 )
 
 func main() {
