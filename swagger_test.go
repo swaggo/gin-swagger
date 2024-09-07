@@ -254,3 +254,16 @@ func TestOauth2DefaultClientID(t *testing.T) {
 	configFunc(&cfg)
 	assert.Equal(t, "", cfg.Oauth2DefaultClientID)
 }
+
+func TestFilter(t *testing.T) {
+	var cfg Config
+	assert.Equal(t, false, cfg.Filter)
+
+	configFunc := Filter(true)
+	configFunc(&cfg)
+	assert.Equal(t, true, cfg.Filter)
+
+	configFunc = Filter(false)
+	configFunc(&cfg)
+	assert.Equal(t, false, cfg.Filter)
+}
