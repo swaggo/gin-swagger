@@ -4,13 +4,13 @@ Since swag 1.7.9 we are allowing registration of multiple endpoints into the sam
 
 Generate documentation for v1 endpoints
 ```shell
-swag i -g main.go -dir api/v1 --instanceName v1
+swag i --v3.1 -g main.go -dir api/v1 --instanceName v1
 ```
 
 
 Generate documentation for v2 endpoints
 ```shell
-swag i -g main.go -dir api/v2 --instanceName v2
+swag i --v3.1 -g main.go -dir api/v2 --instanceName v2
 ```
 
 Run example

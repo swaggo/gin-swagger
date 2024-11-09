@@ -1,16 +1,19 @@
-basePath: /v1
-definitions:
-  v1.Book:
-    properties:
-      author:
-        type: string
-      id:
-        type: integer
-      title:
-        type: string
-      year:
-        type: integer
-    type: object
+components:
+  schemas:
+    v1.Book:
+      properties:
+        author:
+          type: string
+        id:
+          type: integer
+        title:
+          type: string
+        year:
+          type: integer
+      type: object
+externalDocs:
+  description: ""
+  url: ""
 info:
   contact:
     email: support@swagger.io
@@ -23,20 +26,25 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Swagger Example API
   version: "1.0"
+openapi: 3.1.0
 paths:
   /books:
     get:
-      consumes:
-      - application/json
       description: get string by ID
-      produces:
-      - application/json
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/v1.Book'
+                type: array
           description: ok
-          schema:
-            items:
-              $ref: '#/definitions/v1.Book'
-            type: array
       summary: Get a list of books in the the store
-swagger: "2.0"
+servers:
+- url: /v1

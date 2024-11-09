@@ -1,14 +1,14 @@
 package ginSwagger
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 
 	"github.com/gin-contrib/gzip"
-	"github.com/swaggo/swag"
+	"github.com/swaggo/swag/v2"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -51,7 +51,7 @@ func TestWrapCustomHandler(t *testing.T) {
 	assert.Equal(t, w2.Header()["Content-Type"][0], "application/json; charset=utf-8")
 
 	// Perform body rendering validation
-	w2Body, err := ioutil.ReadAll(w2.Body)
+	w2Body, err := io.ReadAll(w2.Body)
 	assert.NoError(t, err)
 	assert.Equal(t, doc.ReadDoc(), string(w2Body))
 

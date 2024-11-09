@@ -1,63 +1,10 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "description": "This is a sample server.",
-        "title": "Swagger Example API",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
-        "version": "1.0"
-    },
-    "basePath": "/v1",
-    "paths": {
-        "/books": {
-            "get": {
-                "description": "get string by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Get a list of books in the the store",
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/v1.Book"
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "definitions": {
-        "v1.Book": {
-            "type": "object",
-            "properties": {
-                "author": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "year": {
-                    "type": "integer"
-                }
-            }
-        }
-    }
+    "components": {"schemas":{"v1.Book":{"properties":{"author":{"type":"string"},"id":{"type":"integer"},"title":{"type":"string"},"year":{"type":"integer"}},"type":"object"}}},
+    "info": {"contact":{"email":"support@swagger.io","name":"API Support","url":"http://www.swagger.io/support"},"description":"This is a sample server.","license":{"name":"Apache 2.0","url":"http://www.apache.org/licenses/LICENSE-2.0.html"},"termsOfService":"http://swagger.io/terms/","title":"Swagger Example API","version":"1.0"},
+    "externalDocs": {"description":"","url":""},
+    "paths": {"/books":{"get":{"description":"get string by ID","requestBody":{"content":{"application/json":{"schema":{"type":"object"}}}},"responses":{"200":{"content":{"application/json":{"schema":{"items":{"$ref":"#/components/schemas/v1.Book"},"type":"array"}}},"description":"ok"}},"summary":"Get a list of books in the the store"}}},
+    "openapi": "3.1.0",
+    "servers": [
+        {"url":"/v1"}
+    ]
 }

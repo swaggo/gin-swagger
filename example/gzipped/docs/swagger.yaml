@@ -1,5 +1,7 @@
-basePath: /v2
-host: petstore.swagger.io
+components: {}
+externalDocs:
+  description: ""
+  url: ""
 info:
   contact:
     email: support@swagger.io
@@ -12,5 +14,7 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Swagger Example API
   version: "1.0"
+openapi: 3.1.0
 paths: {}
-swagger: "2.0"
+servers:
+- url: petstore.swagger.io/v2
