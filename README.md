@@ -16,13 +16,13 @@ gin middleware to automatically generate RESTful API documentation with Swagger 
 2. Download [Swag](https://github.com/swaggo/swag) for Go by using:
 
 ```sh
-go get -u github.com/swaggo/swag/cmd/swag
+go get -u github.com/swaggo/swag/v2/cmd/swag
 ```
 
 Starting in Go 1.17, installing executables with `go get` is deprecated. `go install` may be used instead:
 
 ```sh
-go install github.com/swaggo/swag/cmd/swag@latest
+go install github.com/swaggo/swag/v2/cmd/swag@latest
 ```
 
 3. Run the [Swag](https://github.com/swaggo/swag) at your Go project root path(for instance `~/root/go-project-name`),
@@ -36,14 +36,14 @@ swag init
 4. Download [gin-swagger](https://github.com/swaggo/gin-swagger) by using:
 
 ```sh
-go get -u github.com/swaggo/gin-swagger
+go get -u github.com/swaggo/gin-swagger/v2
 go get -u github.com/swaggo/files
 ```
 
 Import following in your code:
 
 ```go
-import "github.com/swaggo/gin-swagger" // gin-swagger middleware
+import "github.com/swaggo/gin-swagger/v2" // gin-swagger middleware
 import "github.com/swaggo/files" // swagger embed files
 
 ```
@@ -102,7 +102,7 @@ import (
    "github.com/gin-gonic/gin"
    docs "github.com/go-project-name/docs"
    swaggerfiles "github.com/swaggo/files"
-   ginSwagger "github.com/swaggo/gin-swagger"
+   ginSwagger "github.com/swaggo/gin-swagger/v2"
    "net/http"
 )
 // @BasePath /api/v1
