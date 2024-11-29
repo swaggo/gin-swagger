@@ -16,29 +16,29 @@ import (
 )
 
 type swaggerConfig struct {
-	URL                               string
-	DocExpansion                      string
-	Title                             string
-	Oauth2RedirectURL                 htmlTemplate.JS
-	DefaultModelsExpandDepth          int
-	DeepLinking                       bool
-	PersistAuthorization              bool
-	Oauth2DefaultClientID             string
-	UsePkceWithAuthorizationCodeGrant bool
+	URL                      string
+	DocExpansion             string
+	Title                    string
+	Oauth2RedirectURL        htmlTemplate.JS
+	DefaultModelsExpandDepth int
+	DeepLinking              bool
+	PersistAuthorization     bool
+	Oauth2DefaultClientID    string
+	Oauth2UsePkce            bool
 }
 
 // Config stores ginSwagger configuration variables.
 type Config struct {
 	// The url pointing to API definition (normally swagger.json or swagger.yaml). Default is `doc.json`.
-	URL                               string
-	DocExpansion                      string
-	InstanceName                      string
-	Title                             string
-	DefaultModelsExpandDepth          int
-	DeepLinking                       bool
-	PersistAuthorization              bool
-	Oauth2DefaultClientID             string
-	UsePkceWithAuthorizationCodeGrant bool
+	URL                      string
+	DocExpansion             string
+	InstanceName             string
+	Title                    string
+	DefaultModelsExpandDepth int
+	DeepLinking              bool
+	PersistAuthorization     bool
+	Oauth2DefaultClientID    string
+	Oauth2UsePkce            bool
 }
 
 func (config Config) toSwaggerConfig() swaggerConfig {
@@ -50,10 +50,10 @@ func (config Config) toSwaggerConfig() swaggerConfig {
 		Oauth2RedirectURL: "`${window.location.protocol}//${window.location.host}$" +
 			"{window.location.pathname.split('/').slice(0, window.location.pathname.split('/').length - 1).join('/')}" +
 			"/oauth2-redirect.html`",
-		Title:                             config.Title,
-		PersistAuthorization:              config.PersistAuthorization,
-		Oauth2DefaultClientID:             config.Oauth2DefaultClientID,
-		UsePkceWithAuthorizationCodeGrant: config.UsePkceWithAuthorizationCodeGrant,
+		Title:                 config.Title,
+		PersistAuthorization:  config.PersistAuthorization,
+		Oauth2DefaultClientID: config.Oauth2DefaultClientID,
+		Oauth2UsePkce:         config.Oauth2UsePkce,
 	}
 }
 
@@ -109,26 +109,27 @@ func Oauth2DefaultClientID(oauth2DefaultClientID string) func(*Config) {
 	}
 }
 
-// UsePkceWithAuthorizationCodeGrant enables Proof Key for Code Exchange.
-// Only applies to accessCode (Authorization Code) flows.
-func UsePkceWithAuthorizationCodeGrant(usePkce bool) func(*Config) {
+// Oauth2UsePkce enables Proof Key for Code Exchange.
+// Corresponds to the usePkceWithAuthorizationCodeGrant property of the Swagger UI
+// and applies only to accessCode (Authorization Code) flows.
+func Oauth2UsePkce(usePkce bool) func(*Config) {
 	return func(c *Config) {
-		c.UsePkceWithAuthorizationCodeGrant = usePkce
+		c.Oauth2UsePkce = usePkce
 	}
 }
 
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(handler *webdav.Handler, options ...func(*Config)) gin.HandlerFunc {
 	var config = Config{
-		URL:                               "doc.json",
-		DocExpansion:                      "list",
-		InstanceName:                      swag.Name,
-		Title:                             "Swagger UI",
-		DefaultModelsExpandDepth:          1,
-		DeepLinking:                       true,
-		PersistAuthorization:              false,
-		Oauth2DefaultClientID:             "",
-		UsePkceWithAuthorizationCodeGrant: false,
+		URL:                      "doc.json",
+		DocExpansion:             "list",
+		InstanceName:             swag.Name,
+		Title:                    "Swagger UI",
+		DefaultModelsExpandDepth: 1,
+		DeepLinking:              true,
+		PersistAuthorization:     false,
+		Oauth2DefaultClientID:    "",
+		Oauth2UsePkce:            false,
 	}
 
 	for _, c := range options {
@@ -282,10 +283,13 @@ window.onload = function() {
 	defaultModelsExpandDepth: {{.DefaultModelsExpandDepth}}
   })
 
-  ui.initOAuth({
-    clientId: {{.Oauth2DefaultClientID}},
-    usePkceWithAuthorizationCodeGrant: {{.UsePkceWithAuthorizationCodeGrant}}
-  })
+  const defaultClientId = "{{.Oauth2DefaultClientID}}";
+  if (defaultClientId) {
+    ui.initOAuth({
+      clientId: defaultClientId,
+      usePkceWithAuthorizationCodeGrant: {{.Oauth2UsePkce}}
+    })
+  }
 
   window.ui = ui
 }

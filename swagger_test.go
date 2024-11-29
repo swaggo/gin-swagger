@@ -255,15 +255,15 @@ func TestOauth2DefaultClientID(t *testing.T) {
 	assert.Equal(t, "", cfg.Oauth2DefaultClientID)
 }
 
-func TestUsePkceWithAuthorizationCodeGrant(t *testing.T) {
+func TestOauth2UsePkce(t *testing.T) {
 	var cfg Config
-	assert.Equal(t, false, cfg.UsePkceWithAuthorizationCodeGrant)
+	assert.Equal(t, false, cfg.Oauth2UsePkce)
 
-	configFunc := UsePkceWithAuthorizationCodeGrant(true)
+	configFunc := Oauth2UsePkce(true)
 	configFunc(&cfg)
-	assert.Equal(t, true, cfg.UsePkceWithAuthorizationCodeGrant)
+	assert.Equal(t, true, cfg.Oauth2UsePkce)
 
-	configFunc = UsePkceWithAuthorizationCodeGrant(false)
+	configFunc = Oauth2UsePkce(false)
 	configFunc(&cfg)
-	assert.Equal(t, false, cfg.UsePkceWithAuthorizationCodeGrant)
+	assert.Equal(t, false, cfg.Oauth2UsePkce)
 }
