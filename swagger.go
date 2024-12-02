@@ -24,6 +24,7 @@ type swaggerConfig struct {
 	DeepLinking              bool
 	PersistAuthorization     bool
 	Oauth2DefaultClientID    string
+	Oauth2UsePkce            bool
 }
 
 // Config stores ginSwagger configuration variables.
@@ -37,6 +38,7 @@ type Config struct {
 	DeepLinking              bool
 	PersistAuthorization     bool
 	Oauth2DefaultClientID    string
+	Oauth2UsePkce            bool
 }
 
 func (config Config) toSwaggerConfig() swaggerConfig {
@@ -51,6 +53,7 @@ func (config Config) toSwaggerConfig() swaggerConfig {
 		Title:                 config.Title,
 		PersistAuthorization:  config.PersistAuthorization,
 		Oauth2DefaultClientID: config.Oauth2DefaultClientID,
+		Oauth2UsePkce:         config.Oauth2UsePkce,
 	}
 }
 
@@ -106,6 +109,15 @@ func Oauth2DefaultClientID(oauth2DefaultClientID string) func(*Config) {
 	}
 }
 
+// Oauth2UsePkce enables Proof Key for Code Exchange.
+// Corresponds to the usePkceWithAuthorizationCodeGrant property of the Swagger UI
+// and applies only to accessCode (Authorization Code) flows.
+func Oauth2UsePkce(usePkce bool) func(*Config) {
+	return func(c *Config) {
+		c.Oauth2UsePkce = usePkce
+	}
+}
+
 // WrapHandler wraps `http.Handler` into `gin.HandlerFunc`.
 func WrapHandler(handler *webdav.Handler, options ...func(*Config)) gin.HandlerFunc {
 	var config = Config{
@@ -117,6 +129,7 @@ func WrapHandler(handler *webdav.Handler, options ...func(*Config)) gin.HandlerF
 		DeepLinking:              true,
 		PersistAuthorization:     false,
 		Oauth2DefaultClientID:    "",
+		Oauth2UsePkce:            false,
 	}
 
 	for _, c := range options {
@@ -273,7 +286,8 @@ window.onload = function() {
   const defaultClientId = "{{.Oauth2DefaultClientID}}";
   if (defaultClientId) {
     ui.initOAuth({
-      clientId: defaultClientId
+      clientId: defaultClientId,
+      usePkceWithAuthorizationCodeGrant: {{.Oauth2UsePkce}}
     })
   }
 

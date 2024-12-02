@@ -254,3 +254,16 @@ func TestOauth2DefaultClientID(t *testing.T) {
 	configFunc(&cfg)
 	assert.Equal(t, "", cfg.Oauth2DefaultClientID)
 }
+
+func TestOauth2UsePkce(t *testing.T) {
+	var cfg Config
+	assert.Equal(t, false, cfg.Oauth2UsePkce)
+
+	configFunc := Oauth2UsePkce(true)
+	configFunc(&cfg)
+	assert.Equal(t, true, cfg.Oauth2UsePkce)
+
+	configFunc = Oauth2UsePkce(false)
+	configFunc(&cfg)
+	assert.Equal(t, false, cfg.Oauth2UsePkce)
+}
