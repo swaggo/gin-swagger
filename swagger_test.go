@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/gin-contrib/gzip"
-	"github.com/swaggo/swag"
+	"github.com/swaggo/swag/v2"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

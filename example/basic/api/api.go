@@ -3,10 +3,9 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/swag/example/basic/web"
+	"github.com/swaggo/swag/v2/example/basic/web"
 )
 
-//
 // @Summary Add a new pet to the store
 // @Description get string by ID
 // @Accept  json

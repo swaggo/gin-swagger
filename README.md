@@ -12,21 +12,21 @@ gin middleware to automatically generate RESTful API documentation with Swagger 
 
 ### Start using it
 
-1. Add comments to your API source code, [See Declarative Comments Format](https://github.com/swaggo/swag/blob/master/README.md#declarative-comments-format).
-2. Download [Swag](https://github.com/swaggo/swag) for Go by using:
+1. Add comments to your API source code, [See Declarative Comments Format](https://github.com/swaggo/swag/v2/blob/master/README.md#declarative-comments-format).
+2. Download [Swag](https://github.com/swaggo/swag/v2) for Go by using:
 
 ```sh
-go get -u github.com/swaggo/swag/cmd/swag
+go get -u github.com/swaggo/swag/v2/cmd/swag
 ```
 
 Starting in Go 1.17, installing executables with `go get` is deprecated. `go install` may be used instead:
 
 ```sh
-go install github.com/swaggo/swag/cmd/swag@latest
+go install github.com/swaggo/swag/v2/cmd/swag@latest
 ```
 
-3. Run the [Swag](https://github.com/swaggo/swag) at your Go project root path(for instance `~/root/go-project-name`),
-   [Swag](https://github.com/swaggo/swag) will parse comments and generate required files(`docs` folder and `docs/doc.go`)
+3. Run the [Swag](https://github.com/swaggo/swag/v2) at your Go project root path(for instance `~/root/go-project-name`),
+   [Swag](https://github.com/swaggo/swag/v2) will parse comments and generate required files(`docs` folder and `docs/doc.go`)
    at `~/root/go-project-name/docs`.
 
 ```sh
