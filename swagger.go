@@ -6,13 +6,14 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"sync"
 	textTemplate "text/template"
 
 	"golang.org/x/net/webdav"
 
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/swag"
+	"github.com/swaggo/swag/v2"
 )
 
 type swaggerConfig struct {
@@ -163,6 +164,12 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 			ctx.AbortWithStatus(http.StatusMethodNotAllowed)
 
 			return
+		}
+
+		// add missing index.html to the request uri if the path is just a directory
+		folderPath := ctx.FullPath()[:strings.LastIndex(ctx.FullPath(), "/")+1]
+		if ctx.Request.RequestURI == folderPath {
+			ctx.Request.RequestURI += "index.html"
 		}
 
 		matches := matcher.FindStringSubmatch(ctx.Request.RequestURI)
