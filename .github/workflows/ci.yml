@@ -10,12 +10,12 @@ jobs:
   test:
     strategy:
       matrix:
-        go: [ '1.21.x', '1.22.x', '1.23.x', '1.24.x', '1.25.x' ]
+        go: [ '1.24.x', '1.25.x' ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v7
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go }}
       - name: test
